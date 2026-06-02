@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://store.kronexa.com.br/</loc><priority>1.0</priority></url>
+  <url><loc>https://store.kronexa.com.br/checkout.html</loc><priority>0.9</priority></url>
+  <url><loc>https://store.kronexa.com.br/portal-admin.html</loc><priority>0.6</priority></url>
+  <url><loc>https://store.kronexa.com.br/portal-atendente.html</loc><priority>0.6</priority></url>
+  <url><loc>https://store.kronexa.com.br/portal-estoque.html</loc><priority>0.6</priority></url>
+  <url><loc>https://store.kronexa.com.br/portal-financeiro.html</loc><priority>0.6</priority></url>
+  <url><loc>https://store.kronexa.com.br/portal-marketing.html</loc><priority>0.6</priority></url>
+  <url><loc>https://store.kronexa.com.br/portal-cliente.html</loc><priority>0.7</priority></url>
+</urlset>
