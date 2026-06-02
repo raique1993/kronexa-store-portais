@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — Kronexa Store</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#6C3FE8;--c:#00E5FF;--o:#FF6B35;--bg:#08081A;--bg2:#12122A;--bg3:#1a1a35;--t1:#F0F0FF;--t2:#9090b0;--t3:#505070}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.hd{height:56px;background:var(--bg2);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 20px;gap:12px}
+.logo{font-size:15px;font-weight:900}.logo span{color:var(--p)}
+.tag{font-size:10px;font-weight:700;background:rgba(108,63,232,.2);color:var(--p);padding:2px 8px;border-radius:100px}
+.nav{display:flex;gap:6px;margin-left:auto}
+.nav a{padding:6px 12px;border-radius:7px;font-size:12px;color:var(--t2);transition:all .2s;text-decoration:none}
+.nav a:hover,.nav a.on{background:rgba(108,63,232,.15);color:var(--t1)}
+.c{max-width:1200px;margin:0 auto;padding:0 20px}
+.page{padding:28px 0}
+h2{font-size:20px;font-weight:800;letter-spacing:-.5px;margin-bottom:20px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:28px}
+.mc{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:all .2s}
+.mc:hover{border-color:rgba(108,63,232,.2)}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--clr,var(--p))}
+.mc-label{font-size:11px;color:var(--t3);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.mc-val{font-size:30px;font-weight:900;letter-spacing:-1px;margin-bottom:4px}
+.mc-sub{font-size:12px;color:var(--t3)}
+.mc-change{font-size:11px;font-weight:700;padding:2px 7px;border-radius:100px}
+.up{background:rgba(34,197,94,.1);color:#22c55e}
+.dn{background:rgba(239,68,68,.1);color:#f87171}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.grid3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden}
+.card-head{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between}
+.card-head a{font-size:11px;color:var(--p);font-weight:500}
+.card-body{padding:16px}
+.list-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.list-item:last-child{border:none}
+.li-icon{width:32px;height:32px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.li-info{flex:1}
+.li-name{font-size:13px;font-weight:600}
+.li-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.li-val{font-size:13px;font-weight:700}
+.li-val.g{color:#22c55e}
+.status-badge{padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700}
+.sb-p{background:rgba(245,158,11,.1);color:#fbbf24}
+.sb-ok{background:rgba(34,197,94,.1);color:#22c55e}
+.sb-r{background:rgba(59,130,246,.1);color:#93c5fd}
+/* Mini bar chart */
+.bars{display:flex;align-items:flex-end;gap:6px;height:100px;padding:10px 0}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;background:var(--p);border-radius:3px 3px 0 0;opacity:.8;transition:height .3s}
+.bar-label{font-size:9px;color:var(--t3)}
+/* NPS Gauge */
+.nps-gauge{text-align:center;padding:20px}
+.nps-score{font-size:56px;font-weight:900;color:var(--c)}
+.nps-label{font-size:13px;color:var(--t2);margin-top:4px}
+.nps-bar{height:8px;background:var(--bg3);border-radius:4px;margin:16px 0;overflow:hidden}
+.nps-fill{height:100%;background:linear-gradient(90deg,var(--p),var(--c));border-radius:4px}
+/* Tabs */
+.tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--bg3);border-radius:8px;padding:3px}
+.tab{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:var(--t2);border:none;background:transparent;transition:all .2s}
+.tab.on{background:var(--bg2);color:var(--t1);font-weight:700}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="logo">KRO<span>NEXA</span></div>
+  <div class="tag">STORE · ADMIN</div>
+  <nav class="nav">
+    <a href="portal-admin.html" class="on">Dashboard</a>
+    <a href="portal-atendente.html">Atendimento</a>
+    <a href="portal-estoque.html">Estoque</a>
+    <a href="portal-financeiro.html">Financeiro</a>
+    <a href="portal-marketing.html">Marketing</a>
+    <a href="portal-cliente.html">Clientes</a>
+  </nav>
+</header>
+
+<div class="c page">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+    <div>
+      <h2>Dashboard da Loja</h2>
+      <div style="font-size:13px;color:var(--t2)">Hoje, <span id="hoje-data"></span></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="tabs">
+        <button class="tab on" onclick="setPeriodo('hoje',this)">Hoje</button>
+        <button class="tab" onclick="setPeriodo('semana',this)">7 dias</button>
+        <button class="tab" onclick="setPeriodo('mes',this)">Mês</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS PRINCIPAIS -->
+  <div class="metrics">
+    <div class="mc" style="--clr:#22c55e">
+      <div class="mc-label">Vendas hoje <span class="mc-change up" id="vd-change">+12%</span></div>
+      <div class="mc-val" id="vd-val">R$ 1.840</div>
+      <div class="mc-sub" id="vd-sub">8 pedidos concluídos</div>
+    </div>
+    <div class="mc" style="--clr:var(--p)">
+      <div class="mc-label">Mensagens IA <span class="mc-change up">+34%</span></div>
+      <div class="mc-val">47</div>
+      <div class="mc-sub">38 respondidas, 9 convertidas</div>
+    </div>
+    <div class="mc" style="--clr:var(--c)">
+      <div class="mc-label">Conversão <span class="mc-change up">+8%</span></div>
+      <div class="mc-val">19.1%</div>
+      <div class="mc-sub">Mensagens → pedidos</div>
+    </div>
+    <div class="mc" style="--clr:var(--o)">
+      <div class="mc-label">Ticket médio <span class="mc-change dn">-2%</span></div>
+      <div class="mc-val">R$ 230</div>
+      <div class="mc-sub">vs R$ 235 ontem</div>
+    </div>
+    <div class="mc" style="--clr:#a855f7">
+      <div class="mc-label">Clientes novos</div>
+      <div class="mc-val">5</div>
+      <div class="mc-sub">12 clientes retornaram</div>
+    </div>
+    <div class="mc" style="--clr:#fbbf24">
+      <div class="mc-label">Estoque crítico</div>
+      <div class="mc-val">3</div>
+      <div class="mc-sub">produtos abaixo do mínimo</div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO + PEDIDOS RECENTES -->
+  <div class="grid3">
+    <div class="card">
+      <div class="card-head">Vendas dos últimos 7 dias <a href="#">Ver relatório →</a></div>
+      <div class="card-body">
+        <div class="bars" id="bars-chart">
+          <div class="bar-wrap"><div class="bar" style="height:60px;background:var(--p)"></div><div class="bar-label">Seg</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:45px;background:var(--p)"></div><div class="bar-label">Ter</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:80px;background:var(--p)"></div><div class="bar-label">Qua</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:55px;background:var(--p)"></div><div class="bar-label">Qui</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:90px;background:var(--p)"></div><div class="bar-label">Sex</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:70px;background:var(--o)"></div><div class="bar-label">Sáb</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:40px;background:var(--p);opacity:.4"></div><div class="bar-label">Dom</div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-top:8px">
+          <span>Total 7 dias: <strong style="color:var(--t1)">R$ 12.840</strong></span>
+          <span>vs semana ant: <strong style="color:#22c55e">+18%</strong></span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">NPS da Semana</div>
+      <div class="nps-gauge">
+        <div class="nps-score">8.4</div>
+        <div class="nps-label">Score médio · 24 respostas</div>
+        <div class="nps-bar"><div class="nps-fill" style="width:84%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3)">
+          <span>0</span><span>10</span>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;justify-content:center">
+          <div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#22c55e">71%</div><div style="font-size:10px;color:var(--t3)">Promotores</div></div>
+          <div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#fbbf24">21%</div><div style="font-size:10px;color:var(--t3)">Neutros</div></div>
+          <div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#f87171">8%</div><div style="font-size:10px;color:var(--t3)">Detratores</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PEDIDOS + PRODUTOS -->
+  <div class="grid2">
+    <div class="card">
+      <div class="card-head">Pedidos Recentes <a href="#">Ver todos →</a></div>
+      <div class="card-body">
+        <div class="list-item">
+          <div class="li-icon">🛍️</div>
+          <div class="li-info"><div class="li-name">Maria Silva · Chanel N°5</div><div class="li-sub">PIX · há 12 min</div></div>
+          <div><div class="li-val g">R$ 320</div><div style="text-align:right;margin-top:3px"><span class="status-badge sb-ok">Pago</span></div></div>
+        </div>
+        <div class="list-item">
+          <div class="li-icon">🛍️</div>
+          <div class="li-info"><div class="li-name">João Oliveira · Pulseiras (3x)</div><div class="li-sub">PIX · há 28 min</div></div>
+          <div><div class="li-val g">R$ 135</div><div style="text-align:right;margin-top:3px"><span class="status-badge sb-p">Aguard.</span></div></div>
+        </div>
+        <div class="list-item">
+          <div class="li-icon">🛍️</div>
+          <div class="li-info"><div class="li-name">Ana Costa · Armação Gatinho</div><div class="li-sub">Cartão 2x · há 1h</div></div>
+          <div><div class="li-val g">R$ 180</div><div style="text-align:right;margin-top:3px"><span class="status-badge sb-r">Separando</span></div></div>
+        </div>
+        <div class="list-item">
+          <div class="li-icon">🛍️</div>
+          <div class="li-info"><div class="li-name">Carlos Lima · Dior Sauvage</div><div class="li-sub">PIX · há 2h</div></div>
+          <div><div class="li-val g">R$ 285</div><div style="text-align:right;margin-top:3px"><span class="status-badge sb-ok">Entregue</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Top Produtos <a href="#">Ver estoque →</a></div>
+      <div class="card-body">
+        <div class="list-item">
+          <div class="li-icon">🥇</div>
+          <div class="li-info"><div class="li-name">Chanel N°5 100ml</div><div class="li-sub">Perfumaria</div></div>
+          <div class="li-val g">12 vendas</div>
+        </div>
+        <div class="list-item">
+          <div class="li-icon">🥈</div>
+          <div class="li-info"><div class="li-name">Pulseira Dourada Aro</div><div class="li-sub">Bijuteria</div></div>
+          <div class="li-val g">9 vendas</div>
+        </div>
+        <div class="list-item">
+          <div class="li-icon">🥉</div>
+          <div class="li-info"><div class="li-name">Dior Sauvage EDP</div><div class="li-sub">Perfumaria</div></div>
+          <div class="li-val g">7 vendas</div>
+        </div>
+        <div class="list-item">
+          <div class="li-icon">4️⃣</div>
+          <div class="li-info"><div class="li-name">Armação Gatinho</div><div class="li-sub">Ótica</div></div>
+          <div class="li-val g">5 vendas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('hoje-data').textContent = new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+function setPeriodo(p, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  const dados = {
+    hoje: {val:'R$ 1.840', sub:'8 pedidos', change:'+12%'},
+    semana: {val:'R$ 12.840', sub:'56 pedidos', change:'+18%'},
+    mes: {val:'R$ 48.200', sub:'213 pedidos', change:'+24%'}
+  };
+  document.getElementById('vd-val').textContent = dados[p].val;
+  document.getElementById('vd-sub').textContent = dados[p].sub;
+  document.getElementById('vd-change').textContent = dados[p].change;
+}
+</script>
+</body>
+</html>
