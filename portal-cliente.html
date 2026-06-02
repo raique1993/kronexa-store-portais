@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meu Pedido — Kronexa Store</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#6C3FE8;--c:#00E5FF;--bg:#08081A;--bg2:#12122A;--bg3:#1a1a35;--t1:#F0F0FF;--t2:#9090b0;--t3:#505070}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+.hd{text-align:center;padding:20px;border-bottom:1px solid rgba(255,255,255,.07)}
+.hd-logo{font-size:16px;font-weight:900;margin-bottom:2px}.hd-logo span{color:var(--p)}
+.hd-sub{font-size:11px;color:var(--t3)}
+.page{max-width:480px;margin:0 auto;padding:32px 20px 80px}
+.search-box{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:20px}
+.sb-title{font-size:14px;font-weight:700;margin-bottom:12px}
+.fi{width:100%;padding:11px 13px;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:var(--t1);font-size:14px;outline:none;margin-bottom:10px}
+.fi:focus{border-color:var(--p)}
+.btn-b{width:100%;padding:12px;background:var(--p);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer}
+.btn-b:hover{background:#5530c4}
+.pedido-card{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;display:none}
+.pc-head{padding:16px 18px;background:var(--bg3);border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
+.pc-num{font-size:15px;font-weight:700}
+.pc-status{padding:4px 12px;border-radius:100px;font-size:12px;font-weight:700}
+.s-pago{background:rgba(34,197,94,.1);color:#22c55e}
+.s-sep{background:rgba(59,130,246,.1);color:#93c5fd}
+.s-pronto{background:rgba(168,85,247,.1);color:#c4b5fd}
+.s-entregue{background:rgba(34,197,94,.15);color:#22c55e}
+.pc-body{padding:16px 18px}
+.timeline{display:flex;flex-direction:column;gap:0;margin-bottom:16px}
+.tl-item{display:flex;gap:12px;padding-bottom:16px;position:relative}
+.tl-item::before{content:'';position:absolute;left:11px;top:24px;bottom:0;width:1px;background:rgba(255,255,255,.08)}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;z-index:1}
+.td-done{background:var(--p)}
+.td-curr{background:rgba(108,63,232,.3);border:2px solid var(--p);animation:pulse 2s infinite}
+.td-pend{background:var(--bg3)}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.tl-info{}
+.tl-step{font-size:13px;font-weight:700;margin-bottom:2px}
+.tl-time{font-size:11px;color:var(--t3)}
+.items-list{border-top:1px solid rgba(255,255,255,.06);padding-top:14px}
+.item-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.item-row:last-child{border:none;font-weight:700;font-size:14px;padding-top:10px}
+.item-name{color:var(--t2)}
+.nps-box{background:var(--bg3);border-radius:10px;padding:16px;margin-top:14px;text-align:center;display:none}
+.nps-title{font-size:13px;font-weight:700;margin-bottom:12px}
+.nps-stars{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
+.nps-star{font-size:28px;cursor:pointer;transition:all .2s;opacity:.4}
+.nps-star:hover,.nps-star.on{opacity:1;transform:scale(1.2)}
+.nps-comment{width:100%;padding:10px;background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--t1);font-size:13px;outline:none;resize:none;min-height:60px;margin-bottom:10px}
+.nps-btn{padding:10px 20px;background:var(--p);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="hd">
+  <div class="hd-logo">KRO<span>NEXA</span> Store</div>
+  <div class="hd-sub">Rastreamento de pedido</div>
+</div>
+<div class="page">
+  <div class="search-box">
+    <div class="sb-title">🔍 Consultar meu pedido</div>
+    <input class="fi" id="busca" placeholder="Número do pedido ou seu WhatsApp">
+    <button class="btn-b" onclick="buscarPedido()">Consultar</button>
+  </div>
+
+  <div class="pedido-card" id="pedido-card">
+    <div class="pc-head">
+      <div class="pc-num" id="pc-num">Pedido #001</div>
+      <span class="pc-status s-sep" id="pc-status">Separando</span>
+    </div>
+    <div class="pc-body">
+      <div class="timeline" id="timeline"></div>
+      <div class="items-list" id="items-list"></div>
+    </div>
+  </div>
+
+  <div id="nps-container"></div>
+</div>
+
+<script>
+const mockPedido = {
+  num: '001', status: 'SEPARANDO',
+  timeline: [
+    {step: '✅ Pedido recebido', time: 'hoje às 14:32', done: true},
+    {step: '💳 Pagamento confirmado', time: 'hoje às 14:35', done: true},
+    {step: '📦 Separando produtos', time: 'em andamento', curr: true},
+    {step: '✓ Pronto para retirada', time: 'previsão: 1h', done: false},
+  ],
+  items: [
+    {nome: 'Chanel N°5 100ml', qtd: 1, preco: 320},
+    {nome: 'Pulseira Dourada', qtd: 2, preco: 90},
+  ],
+  total: 410, pag: 'PIX', cliente: 'Maria Silva', entregue: false
+};
+
+function buscarPedido() {
+  const busca = document.getElementById('busca').value.trim();
+  if (!busca) { alert('Digite o número do pedido ou seu WhatsApp'); return; }
+
+  document.getElementById('pc-num').textContent = 'Pedido #' + mockPedido.num;
+  const statusMap = {SEPARANDO: {cls:'s-sep', label:'Separando'}, PAGO:{cls:'s-pago',label:'Pago'}, PRONTO:{cls:'s-pronto',label:'Pronto!'}, ENTREGUE:{cls:'s-entregue',label:'Entregue'}};
+  const st = statusMap[mockPedido.status] || {cls:'s-pago',label:mockPedido.status};
+  const stEl = document.getElementById('pc-status');
+  stEl.textContent = st.label; stEl.className = 'pc-status ' + st.cls;
+
+  document.getElementById('timeline').innerHTML = mockPedido.timeline.map(t=>`
+    <div class="tl-item">
+      <div class="tl-dot ${t.done?'td-done':t.curr?'td-curr':'td-pend'}">${t.done?'✓':t.curr?'⏳':''}</div>
+      <div class="tl-info">
+        <div class="tl-step" style="color:${t.done?'var(--t1)':t.curr?'var(--c)':'var(--t3)'}">${t.step}</div>
+        <div class="tl-time">${t.time}</div>
+      </div>
+    </div>`).join('');
+
+  const itemsHtml = mockPedido.items.map(i=>`
+    <div class="item-row"><span class="item-name">${i.qtd}x ${i.nome}</span><span>R$ ${i.preco}</span></div>
+  `).join('') + `<div class="item-row"><span>Total</span><span>R$ ${mockPedido.total}</span></div>`;
+  document.getElementById('items-list').innerHTML = itemsHtml;
+
+  document.getElementById('pedido-card').style.display = 'block';
+
+  if (mockPedido.entregue) {
+    document.getElementById('nps-container').innerHTML = `
+      <div class="nps-box" style="display:block;background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-top:16px">
+        <div class="nps-title">Como foi sua experiência? ⭐</div>
+        <div class="nps-stars" id="nps-stars">
+          ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span class="nps-star" onclick="setNota(${n})" id="ns-${n}">${n<=5?'😐':n<=8?'😊':'🤩'}</span>`).join('')}
+        </div>
+        <textarea class="nps-comment" placeholder="Deixe um comentário (opcional)"></textarea>
+        <button class="nps-btn" onclick="enviarNPS()">Enviar avaliação</button>
+      </div>`;
+  }
+}
+
+let notaAtual = 0;
+function setNota(n) {
+  notaAtual = n;
+  document.querySelectorAll('.nps-star').forEach((el,i)=>{
+    el.classList.toggle('on', i < n);
+  });
+}
+function enviarNPS() { alert('Obrigado pela avaliação! 🎉'); }
+
+const params = new URLSearchParams(location.search);
+if (params.get('pedido')) { document.getElementById('busca').value = params.get('pedido'); buscarPedido(); }
+</script>
+</body>
+</html>
