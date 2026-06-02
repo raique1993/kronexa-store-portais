@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Marketing — Kronexa Store</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#6C3FE8;--c:#00E5FF;--o:#FF6B35;--bg:#08081A;--bg2:#12122A;--bg3:#1a1a35;--t1:#F0F0FF;--t2:#9090b0;--t3:#505070}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,sans-serif}
+.hd{height:56px;background:var(--bg2);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 20px;gap:12px}
+.logo{font-size:15px;font-weight:900}.logo span{color:var(--p)}
+.tag{font-size:10px;font-weight:700;background:rgba(108,63,232,.2);color:var(--p);padding:2px 8px;border-radius:100px}
+.nav{display:flex;gap:6px;margin-left:auto}
+.nav a{padding:6px 12px;border-radius:7px;font-size:12px;color:var(--t2);text-decoration:none;transition:all .2s}
+.nav a:hover,.nav a.on{background:rgba(108,63,232,.15);color:var(--t1)}
+.c{max-width:1200px;margin:0 auto;padding:0 20px}
+.page{padding:28px 0}
+.tabs{display:flex;gap:4px;margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:0}
+.tab{padding:10px 18px;border-radius:10px 10px 0 0;font-size:13px;font-weight:500;cursor:pointer;color:var(--t2);border:none;background:transparent;transition:all .2s;border-bottom:2px solid transparent}
+.tab:hover{color:var(--t1)}
+.tab.on{color:var(--t1);font-weight:700;border-bottom-color:var(--p)}
+.panel{display:none}.panel.on{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden;transition:all .3s}
+.card:hover{border-color:rgba(108,63,232,.2)}
+.card-head{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.card-body{padding:16px 18px}
+.post-img{height:160px;background:linear-gradient(135deg,var(--bg3),var(--bg2));border-radius:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:40px;cursor:pointer;transition:all .2s}
+.post-img:hover{opacity:.8}
+.post-caption{font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:10px}
+.post-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.post-tag{font-size:10px;color:var(--p);font-weight:600}
+.post-actions{display:flex;gap:6px}
+.pa{padding:7px 12px;border-radius:7px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .2s}
+.pa-ig{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff}
+.pa-fb{background:#1877f2;color:#fff}
+.pa-x{background:#000;border:1px solid #333;color:#fff}
+.pa-o{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--t2)}.pa-o:hover{border-color:var(--p);color:var(--p)}
+.status-badge{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700}
+.sb-p{background:rgba(245,158,11,.1);color:#fbbf24}
+.sb-ok{background:rgba(34,197,94,.1);color:#22c55e}
+.create-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:rgba(108,63,232,.1);border:2px dashed rgba(108,63,232,.3);border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;color:var(--p);transition:all .2s;width:100%}
+.create-btn:hover{background:rgba(108,63,232,.15);border-color:var(--p)}
+/* Upload area */
+.upload-area{border:2px dashed rgba(255,255,255,.15);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:all .2s}
+.upload-area:hover{border-color:var(--p);background:rgba(108,63,232,.05)}
+.ua-icon{font-size:36px;margin-bottom:8px}
+.ua-text{font-size:14px;color:var(--t2)}.ua-text strong{color:var(--t1);display:block;margin-bottom:3px}
+.fi{width:100%;padding:11px;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--t1);font-size:13px;outline:none;margin-bottom:10px}
+.fi:focus{border-color:var(--p)}
+.btn-g{padding:13px 24px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;width:100%;margin-top:4px;transition:all .2s}
+.btn-g:hover{background:#5530c4}
+.ia-result{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-top:12px;display:none}
+.ir-label{font-size:10px;font-weight:700;color:var(--p);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.ir-text{font-size:13px;color:var(--t1);line-height:1.7;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="logo">KRO<span>NEXA</span></div>
+  <div class="tag">STORE · MARKETING</div>
+  <nav class="nav">
+    <a href="portal-admin.html">Dashboard</a>
+    <a href="portal-atendente.html">Atendimento</a>
+    <a href="portal-estoque.html">Estoque</a>
+    <a href="portal-financeiro.html">Financeiro</a>
+    <a href="portal-marketing.html" class="on">Marketing</a>
+  </nav>
+</header>
+
+<div class="c page">
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('criar',this)">✨ Criar com IA</button>
+    <button class="tab" onclick="showTab('posts',this)">📋 Posts publicados</button>
+    <button class="tab" onclick="showTab('campanhas',this)">📢 Campanhas</button>
+    <button class="tab" onclick="showTab('calendario',this)">📅 Calendário</button>
+  </div>
+
+  <!-- CRIAR -->
+  <div class="panel on" id="tab-criar">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:14px">🤖 Gerador de post com IA</div>
+        <div class="upload-area" onclick="document.getElementById('fi-img').click()">
+          <input type="file" id="fi-img" accept="image/*" style="display:none" onchange="previewImg(this)">
+          <div class="ua-icon" id="ua-icon">📸</div>
+          <div class="ua-text"><strong id="ua-text">Arraste a foto do produto</strong><span id="ua-sub">ou clique para selecionar</span></div>
+        </div>
+        <div style="margin-top:12px">
+          <select class="fi" id="rede-sel">
+            <option value="instagram">Instagram / Reels</option>
+            <option value="facebook">Facebook</option>
+            <option value="x">X (Twitter)</option>
+            <option value="todos">Todas as redes</option>
+          </select>
+          <select class="fi" id="tom-sel">
+            <option value="vendas">Foco em vendas</option>
+            <option value="informativo">Informativo / educativo</option>
+            <option value="promocao">Promoção / urgência</option>
+            <option value="descontraido">Descontraído e amigável</option>
+          </select>
+          <input type="text" class="fi" id="detalhe-inp" placeholder="Detalhes do produto (opcional)">
+          <button class="btn-g" id="btn-gerar" onclick="gerarPost()" disabled>🤖 Gerar post com IA</button>
+        </div>
+        <div class="ia-result" id="ia-result">
+          <div>
+            <div class="ir-label">✨ Legenda gerada</div>
+            <div class="ir-text" id="ir-caption"></div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="ir-label"># Hashtags</div>
+            <div class="ir-text" id="ir-tags" style="color:var(--p)"></div>
+          </div>
+          <div style="display:flex;gap:7px;margin-top:12px;flex-wrap:wrap">
+            <button class="pa pa-ig" onclick="copiarPost()">📋 Copiar</button>
+            <button class="pa pa-ig" onclick="abrirIG()">📸 Instagram</button>
+            <button class="pa pa-fb">👍 Facebook</button>
+            <button class="pa pa-x">🐦 X</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:14px">📅 Posts rápidos para sua loja</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;cursor:pointer" onclick="usarTemplate('lancamento')">
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">🆕 Lançamento de produto</div>
+            <div style="font-size:12px;color:var(--t2)">Apresente um produto novo com destaque e CTA</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;cursor:pointer" onclick="usarTemplate('promocao')">
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">🏷️ Promoção relâmpago</div>
+            <div style="font-size:12px;color:var(--t2)">Oferta por tempo limitado com urgência</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;cursor:pointer" onclick="usarTemplate('depoimento')">
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">⭐ Depoimento de cliente</div>
+            <div style="font-size:12px;color:var(--t2)">Compartilhe avaliação positiva de um cliente</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;cursor:pointer" onclick="usarTemplate('dica')">
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">💡 Dica do dia</div>
+            <div style="font-size:12px;color:var(--t2)">Conteúdo educativo que gera engajamento</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;cursor:pointer" onclick="usarTemplate('bastidores')">
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">🎬 Bastidores da loja</div>
+            <div style="font-size:12px;color:var(--t2)">Mostre o dia a dia e humanize a marca</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POSTS -->
+  <div class="panel" id="tab-posts">
+    <div class="grid">
+      <button class="create-btn" onclick="showTab('criar',null)">+ Criar novo post com IA</button>
+      <div class="card">
+        <div class="card-head">📸 <span>Dior Sauvage — Presente perfeito!</span><span class="status-badge sb-ok" style="margin-left:auto">Publicado</span></div>
+        <div class="card-body">
+          <div class="post-img" style="font-size:20px">🌿</div>
+          <div class="post-caption">O presente ideal para quem ama um amadeirado marcante. Dior Sauvage 100ml disponível! 🔥</div>
+          <div class="post-tags"><span class="post-tag">#perfume</span><span class="post-tag">#dior</span><span class="post-tag">#presente</span></div>
+          <div style="font-size:11px;color:var(--t3);margin-bottom:8px">📸 Instagram · há 2 dias · 847 visualizações · 63 likes</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">💎 <span>Pulseiras douradas novas!</span><span class="status-badge sb-p" style="margin-left:auto">Agendado</span></div>
+        <div class="card-body">
+          <div class="post-img" style="font-size:20px">✨</div>
+          <div class="post-caption">Chegaram as novas pulseiras douradas! Perfeitas para combinar com qualquer look. 💛</div>
+          <div class="post-tags"><span class="post-tag">#bijuteria</span><span class="post-tag">#pulseira</span><span class="post-tag">#moda</span></div>
+          <div style="font-size:11px;color:var(--t3);margin-bottom:8px">📸 Instagram + 👍 Facebook · amanhã às 18h</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMPANHAS -->
+  <div class="panel" id="tab-campanhas">
+    <div class="grid">
+      <div class="card">
+        <div class="card-head">📢 Reengajamento — Clientes inativos</div>
+        <div class="card-body">
+          <div style="font-size:13px;color:var(--t2);margin-bottom:12px">Envia mensagem automática para clientes que não compram há 30+ dias.</div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px"><span style="color:var(--t3)">Clientes elegíveis</span><span>48</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:12px"><span style="color:var(--t3)">Última execução</span><span>há 3 dias</span></div>
+          <button style="width:100%;padding:10px;background:var(--p);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">▶ Executar agora</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">🎂 Aniversariantes do mês</div>
+        <div class="card-body">
+          <div style="font-size:13px;color:var(--t2);margin-bottom:12px">Envio automático de cupom de 10% no dia do aniversário do cliente.</div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px"><span style="color:var(--t3)">Aniversários este mês</span><span>7</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:12px"><span style="color:var(--t3)">Status</span><span style="color:#22c55e">✅ Ativo</span></div>
+          <button style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--t2);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Ver configurações</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">🏷️ Promoção de fim de semana</div>
+        <div class="card-body">
+          <div style="font-size:13px;color:var(--t2);margin-bottom:12px">Cria e distribui promoção automática toda sexta às 18h para clientes VIP.</div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px"><span style="color:var(--t3)">Clientes VIP</span><span>23</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:12px"><span style="color:var(--t3)">Status</span><span style="color:#fbbf24">⏸ Pausado</span></div>
+          <button style="width:100%;padding:10px;background:var(--p);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">▶ Ativar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDÁRIO -->
+  <div class="panel" id="tab-calendario">
+    <div style="background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px">
+      <div style="font-size:16px;font-weight:700;margin-bottom:16px">📅 Melhor horário para postar</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:11px;text-align:center">
+        <div style="color:var(--t3);padding:6px;font-weight:700">Seg</div>
+        <div style="color:var(--t3);padding:6px;font-weight:700">Ter</div>
+        <div style="color:var(--t3);padding:6px;font-weight:700">Qua</div>
+        <div style="color:var(--t3);padding:6px;font-weight:700">Qui</div>
+        <div style="color:var(--t3);padding:6px;font-weight:700">Sex</div>
+        <div style="color:var(--t3);padding:6px;font-weight:700">Sáb</div>
+        <div style="color:var(--t3);padding:6px;font-weight:700">Dom</div>
+      </div>
+      <div style="font-size:13px;color:var(--t2);margin-top:16px;line-height:1.7">
+        <strong style="color:var(--t1)">Melhores horários para sua loja:</strong><br>
+        📸 Instagram: Seg-Sex às <strong style="color:var(--c)">18h-20h</strong> e <strong style="color:var(--c)">12h-13h</strong><br>
+        👍 Facebook: Qua-Sex às <strong style="color:var(--c)">13h-16h</strong><br>
+        🐦 X: Seg-Qua às <strong style="color:var(--c)">8h-10h</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(id, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  if (el) el.classList.add('on');
+}
+
+let imgFile = null;
+function previewImg(input) {
+  const f = input.files[0];
+  if (!f) return;
+  imgFile = f;
+  document.getElementById('ua-icon').textContent = '✅';
+  document.getElementById('ua-text').textContent = f.name;
+  document.getElementById('ua-sub').textContent = (f.size/1024/1024).toFixed(1) + ' MB';
+  document.getElementById('btn-gerar').disabled = false;
+}
+
+async function gerarPost() {
+  const btn = document.getElementById('btn-gerar');
+  btn.disabled = true; btn.textContent = '⏳ Gerando...';
+  const rede = document.getElementById('rede-sel').value;
+  const tom = document.getElementById('tom-sel').value;
+  const detalhe = document.getElementById('detalhe-inp').value;
+
+  let imgData = '';
+  if (imgFile) {
+    imgData = await new Promise(r=>{const rd=new FileReader();rd.onload=e=>r(e.target.result.split(',')[1]);rd.readAsDataURL(imgFile);});
+  }
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        messages: [{role:'user', content: [
+          ...(imgData ? [{type:'image',source:{type:'base64',media_type:imgFile.type,data:imgData}}] : []),
+          {type:'text', text: `Você é especialista em marketing para lojas de varejo brasileiras.
+Crie um post para ${rede} com tom ${tom} para uma loja de varejo.
+${detalhe ? 'Produto: '+detalhe : ''}
+Responda APENAS em JSON:
+{"legenda":"texto do post com emojis e CTA","hashtags":["#tag1","#tag2"]}`}
+        ]}]
+      })
+    });
+    const d = await resp.json();
+    const raw = d.content?.[0]?.text || '{}';
+    const parsed = JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0] || '{}');
+    document.getElementById('ir-caption').textContent = parsed.legenda || 'Produto incrível disponível agora! 🛍️';
+    document.getElementById('ir-tags').textContent = (parsed.hashtags || []).join(' ');
+    document.getElementById('ia-result').style.display = 'block';
+  } catch(e) {
+    document.getElementById('ir-caption').textContent = 'Produto especial disponível! Entre em contato pelo WhatsApp. 😊';
+    document.getElementById('ir-tags').textContent = '#loja #produto #varejo #promoção';
+    document.getElementById('ia-result').style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = '🤖 Gerar novamente';
+}
+
+function copiarPost() {
+  const cap = document.getElementById('ir-caption').textContent;
+  const tags = document.getElementById('ir-tags').textContent;
+  navigator.clipboard.writeText(cap + '\n\n' + tags).then(()=>alert('Copiado!'));
+}
+function abrirIG() { window.open('https://www.instagram.com/', '_blank'); }
+function usarTemplate(t) { showTab('criar', document.querySelector('.tab')); alert('Template "'+t+'" aplicado! Adicione a foto do produto.'); }
+</script>
+</body>
+</html>
