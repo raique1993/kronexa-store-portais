@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kronexa Store — IA que vende enquanto você dorme</title>
+<meta name="description" content="Sistema completo de IA para lojas de varejo. Vende pelo WhatsApp 24h, gerencia estoque, cria posts e substitui funcionários.">
+<meta property="og:title" content="Kronexa Store — IA para varejo">
+<meta property="og:description" content="IA que vende, estoca, posta e atende 24h. Para perfumarias, bijuterias, óticas, moda e acessórios.">
+<link rel="canonical" href="https://store.kronexa.com.br">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,4 96,28 96,72 50,96 4,72 4,28' fill='%236C3FE8'/><polygon points='50,20 80,36 80,64 50,80 20,64 20,36' fill='none' stroke='%2300E5FF' stroke-width='3'/><line x1='36' y1='28' x2='36' y2='72' stroke='white' stroke-width='7' stroke-linecap='round'/><line x1='36' y1='50' x2='64' y2='28' stroke='white' stroke-width='7' stroke-linecap='round'/><line x1='36' y1='50' x2='64' y2='72' stroke='white' stroke-width='7' stroke-linecap='round'/><circle cx='50' cy='50' r='5' fill='%2300E5FF'/></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --p:#6C3FE8;--pd:#5530c4;--c:#00E5FF;--o:#FF6B35;
+  --bg:#08081A;--bg2:#12122A;--bg3:#1a1a35;--bg4:#22223a;
+  --t1:#F0F0FF;--t2:#9090b0;--t3:#505070;--r:14px
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+.c{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* HEADER */
+.hd{position:sticky;top:0;z-index:100;height:66px;background:rgba(8,8,26,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(108,63,232,.15)}
+.hd .c{display:flex;align-items:center;justify-content:space-between;height:100%}
+.hd-logo{display:flex;align-items:center;gap:10px}
+.hd-logo svg{width:32px;height:32px}
+.hd-name{font-size:17px;font-weight:900;letter-spacing:.5px}
+.hd-name span{color:var(--p)}
+.hd-tag{font-size:10px;font-weight:700;background:rgba(108,63,232,.2);color:var(--p);padding:2px 8px;border-radius:100px;letter-spacing:1px}
+.hd-nav{display:flex;gap:24px;align-items:center}
+.hd-nav a{font-size:13px;color:var(--t2);transition:color .2s}.hd-nav a:hover{color:var(--t1)}
+.hd-cta{padding:9px 20px;background:var(--p);color:#fff;border-radius:100px;font-size:13px;font-weight:700;transition:all .2s}
+.hd-cta:hover{background:var(--pd);transform:translateY(-1px)}
+
+/* HERO */
+.hero{padding:90px 0 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(108,63,232,.18) 0%,transparent 60%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;background:rgba(108,63,232,.12);border:1px solid rgba(108,63,232,.25);border-radius:100px;font-size:11px;font-weight:700;color:var(--p);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--c);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+h1{font-size:clamp(36px,6vw,72px);font-weight:900;letter-spacing:-2.5px;line-height:1.0;margin-bottom:16px}
+h1 .g{background:linear-gradient(135deg,var(--p),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:clamp(16px,2vw,20px);color:var(--t2);max-width:600px;line-height:1.7;margin-bottom:36px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:15px 30px;background:var(--p);color:#fff;border-radius:12px;font-size:15px;font-weight:800;transition:all .25s;border:none;cursor:pointer}
+.btn-p:hover{background:var(--pd);transform:translateY(-2px);box-shadow:0 12px 36px rgba(108,63,232,.4)}
+.btn-o{display:inline-flex;align-items:center;gap:8px;padding:15px 30px;background:transparent;color:var(--t1);border:1px solid rgba(255,255,255,.15);border-radius:12px;font-size:15px;font-weight:600;transition:all .25s}
+.btn-o:hover{border-color:var(--p);color:var(--p)}
+.hero-trust{display:flex;gap:24px;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.06);flex-wrap:wrap}
+.trust-item{font-size:13px;color:var(--t3);display:flex;align-items:center;gap:6px}
+.trust-item span{color:var(--c);font-weight:700}
+
+/* DEMO WHATSAPP */
+.hero-demo{position:relative;margin-top:60px}
+.demo-label{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:2px;text-align:center;margin-bottom:20px}
+.wpp-mockup{max-width:380px;margin:0 auto;background:#0e1117;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 40px 80px rgba(0,0,0,.6)}
+.wpp-header{background:#1f2937;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.wpp-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--c));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.wpp-info{flex:1}
+.wpp-name{font-size:14px;font-weight:700}
+.wpp-status{font-size:11px;color:#22c55e}
+.wpp-body{padding:16px;display:flex;flex-direction:column;gap:10px;min-height:320px}
+.msg{max-width:80%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.5}
+.msg.bot{background:#1f2937;align-self:flex-start;border-radius:4px 12px 12px 12px}
+.msg.user{background:var(--p);align-self:flex-end;border-radius:12px 4px 12px 12px}
+.msg.typing{opacity:.5}
+.msg-img{width:100%;border-radius:8px;margin-bottom:6px;background:linear-gradient(135deg,var(--bg3),var(--bg4));height:100px;display:flex;align-items:center;justify-content:center;font-size:32px}
+
+/* NICHOS */
+.nichos{padding:80px 0}
+.sec-tag{font-size:11px;font-weight:700;color:var(--p);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-size:clamp(26px,3.5vw,40px);font-weight:900;letter-spacing:-1.5px;margin-bottom:10px}
+.sec-sub{font-size:16px;color:var(--t2);max-width:560px;line-height:1.6;margin-bottom:44px}
+.nicho-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.nicho-card{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:var(--r);padding:20px;text-align:center;transition:all .3s;cursor:pointer}
+.nicho-card:hover{border-color:rgba(108,63,232,.4);transform:translateY(-3px);background:var(--bg3)}
+.nicho-icon{font-size:32px;margin-bottom:10px}
+.nicho-name{font-size:13px;font-weight:700;margin-bottom:4px}
+.nicho-desc{font-size:11px;color:var(--t3)}
+
+/* FEATURES */
+.features{background:var(--bg2);padding:80px 0}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.feat-card{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:24px;position:relative;overflow:hidden;transition:all .3s}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--clr,var(--p));opacity:.7}
+.feat-card:hover{border-color:rgba(108,63,232,.2);transform:translateY(-2px)}
+.feat-num{font-size:10px;font-weight:800;color:var(--p);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;opacity:.7}
+.feat-icon{font-size:28px;margin-bottom:12px}
+.feat-title{font-size:17px;font-weight:800;margin-bottom:8px}
+.feat-desc{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:14px}
+.feat-items{display:flex;flex-direction:column;gap:5px}
+.feat-item{font-size:12px;color:var(--t2);display:flex;gap:6px}
+.feat-item .ok{color:var(--c);font-weight:700;flex-shrink:0}
+
+/* FLUXO */
+.fluxo{padding:80px 0}
+.flow-steps{display:flex;flex-direction:column;gap:0;max-width:700px}
+.flow-step{display:flex;gap:20px;padding-bottom:36px;position:relative}
+.flow-step::before{content:'';position:absolute;left:19px;top:40px;bottom:0;width:2px;background:linear-gradient(to bottom,var(--p),transparent)}
+.flow-step:last-child::before{display:none}
+.flow-dot{width:40px;height:40px;border-radius:50%;background:var(--p);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;z-index:1;box-shadow:0 0 20px rgba(108,63,232,.4)}
+.flow-content{}
+.flow-label{font-size:11px;font-weight:700;color:var(--p);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.flow-title{font-size:17px;font-weight:700;margin-bottom:5px}
+.flow-desc{font-size:13px;color:var(--t2);line-height:1.6}
+
+/* PLANOS */
+.planos{padding:80px 0;background:var(--bg2)}
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:48px}
+.plan{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:28px;position:relative;transition:all .3s}
+.plan.popular{border-color:var(--p);background:rgba(108,63,232,.05)}
+.pop-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;font-size:10px;font-weight:900;padding:3px 14px;border-radius:100px;white-space:nowrap;letter-spacing:.5px}
+.plan-name{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.plan-price{font-size:46px;font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:4px}
+.plan-price sup{font-size:18px;color:var(--t2);vertical-align:top;margin-top:10px}
+.plan-price .per{font-size:14px;color:var(--t2);font-weight:400}
+.plan-period{font-size:12px;color:var(--t3);margin-bottom:16px}
+.plan-desc{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:20px}
+.plan-btn{display:block;width:100%;padding:13px;text-align:center;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;border:none;transition:all .2s;margin-bottom:24px}
+.pb-g{background:var(--p);color:#fff}.pb-g:hover{background:var(--pd);transform:translateY(-1px)}
+.pb-o{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--t2)}.pb-o:hover{border-color:var(--p);color:var(--p)}
+.plan-feats{display:flex;flex-direction:column;gap:8px}
+.pf{display:flex;gap:8px;font-size:12px;color:var(--t2);align-items:flex-start}
+.pf .ok{color:var(--c);font-weight:700;flex-shrink:0}
+.pf .no{color:var(--bg4);flex-shrink:0}
+
+/* INTEGRAÇÕES */
+.integracoes{padding:80px 0}
+.int-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:40px}
+.int-item{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 20px;font-size:13px;font-weight:600;color:var(--t2);transition:all .2s;display:flex;align-items:center;gap:8px}
+.int-item:hover{border-color:rgba(108,63,232,.3);color:var(--t1)}
+
+/* STATS */
+.stats-bar{background:linear-gradient(135deg,var(--p),#4422aa);padding:48px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:24px;text-align:center}
+.stat-n{font-size:42px;font-weight:900;letter-spacing:-2px;color:#fff}
+.stat-l{font-size:13px;color:rgba(255,255,255,.7);margin-top:4px}
+
+/* DEPOIMENTOS */
+.depoimentos{padding:80px 0}
+.dep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:44px}
+.dep-card{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:var(--r);padding:24px;transition:all .3s}
+.dep-card:hover{border-color:rgba(108,63,232,.2)}
+.dep-stars{font-size:14px;margin-bottom:12px}
+.dep-text{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:16px;font-style:italic}
+.dep-author{display:flex;align-items:center;gap:10px}
+.dep-avatar{width:36px;height:36px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff}
+.dep-name{font-size:13px;font-weight:700}
+.dep-role{font-size:11px;color:var(--t3)}
+
+/* CTA FINAL */
+.cta-final{padding:100px 0;text-align:center;position:relative;overflow:hidden}
+.cta-final::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(108,63,232,.15) 0%,transparent 60%);pointer-events:none}
+.cta-title{font-size:clamp(30px,5vw,56px);font-weight:900;letter-spacing:-2px;margin-bottom:12px}
+.cta-sub{font-size:18px;color:var(--t2);margin-bottom:36px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.6}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid rgba(255,255,255,.06);padding:40px 0 24px}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.foot-brand{}
+.foot-logo{font-size:16px;font-weight:900;margin-bottom:8px}.foot-logo span{color:var(--p)}
+.foot-desc{font-size:13px;color:var(--t3);line-height:1.6;max-width:240px;margin-bottom:14px}
+.foot-social{display:flex;gap:10px}
+.foot-social a{width:34px;height:34px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.foot-social a:hover{background:var(--p)}
+.foot-col-title{font-size:12px;font-weight:700;color:var(--t1);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.foot-links{display:flex;flex-direction:column;gap:8px}
+.foot-links a{font-size:13px;color:var(--t3);transition:color .2s}.foot-links a:hover{color:var(--t1)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.foot-copy{font-size:12px;color:var(--t3)}
+.foot-links-b{display:flex;gap:16px}
+.foot-links-b a{font-size:12px;color:var(--t3)}.foot-links-b a:hover{color:var(--t1)}
+
+/* STICKY MOBILE */
+.sticky-cta{display:none;position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:rgba(8,8,26,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(108,63,232,.2);z-index:99}
+.sticky-cta .btn-p{width:100%;justify-content:center;font-size:16px}
+
+@media(max-width:768px){
+  .hd-nav{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .sticky-cta{display:block}
+  .hero{padding:60px 0 40px}
+}
+@media(max-width:480px){
+  .foot-grid{grid-template-columns:1fr}
+  .hero-trust{gap:14px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hd">
+  <div class="c">
+    <div class="hd-logo">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,4 108,30 108,90 60,116 12,90 12,30" fill="#6C3FE8"/>
+        <polygon points="60,20 92,38 92,82 60,100 28,82 28,38" fill="none" stroke="#00E5FF" stroke-width="2.5"/>
+        <line x1="44" y1="35" x2="44" y2="85" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+        <line x1="44" y1="60" x2="76" y2="35" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+        <line x1="44" y1="60" x2="76" y2="85" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="60" cy="60" r="6" fill="#00E5FF"/>
+      </svg>
+      <div>
+        <div class="hd-name">KRO<span>NEXA</span></div>
+        <div class="hd-tag">STORE</div>
+      </div>
+    </div>
+    <nav class="hd-nav">
+      <a href="#recursos">Recursos</a>
+      <a href="#nichos">Para quem</a>
+      <a href="#planos">Planos</a>
+      <a href="#integracoes">Integrações</a>
+      <a href="https://kronexa.com.br">Empresa</a>
+    </nav>
+    <a href="checkout.html" class="hd-cta">Começar grátis →</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="c">
+    <div class="hero-badge">Novo · IA para varejo brasileiro</div>
+    <h1>A IA que <span class="g">vende</span> enquanto<br>você dorme.</h1>
+    <p class="hero-sub">Atendimento pelo WhatsApp 24h, gestão de estoque, posts automáticos nas redes sociais e relatórios financeiros — tudo sem precisar de funcionário.</p>
+    <div class="hero-btns">
+      <a href="checkout.html" class="btn-p">🚀 Teste grátis por 7 dias</a>
+      <a href="https://wa.me/5561991775904?text=Quero+ver+uma+demo+do+Kronexa+Store" target="_blank" class="btn-o">📱 Ver demo ao vivo</a>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-item"><span>✅</span>7 dias grátis</div>
+      <div class="trust-item"><span>✅</span>Sem cartão no início</div>
+      <div class="trust-item"><span>✅</span>Cancela quando quiser</div>
+      <div class="trust-item"><span>✅</span>Configura em 1 hora</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="c">
+    <div class="stats-grid">
+      <div><div class="stat-n">24/7</div><div class="stat-l">Atendimento automático</div></div>
+      <div><div class="stat-n">+300%</div><div class="stat-l">Mais vendas reportadas</div></div>
+      <div><div class="stat-n">0</div><div class="stat-l">Funcionários extras</div></div>
+      <div><div class="stat-n">5min</div><div class="stat-l">Para fazer o primeiro post</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NICHOS -->
+<section class="nichos" id="nichos">
+  <div class="c">
+    <div class="sec-tag">Para quem é</div>
+    <h2 class="sec-title">Funciona para qualquer loja de varejo</h2>
+    <p class="sec-sub">Seja qual for o seu nicho, o Kronexa Store se adapta ao seu catálogo, ao seu público e ao seu jeito de vender.</p>
+    <div class="nicho-grid">
+      <div class="nicho-card"><div class="nicho-icon">🌸</div><div class="nicho-name">Perfumaria</div><div class="nicho-desc">Fragrâncias, cosméticos, cuidados pessoais</div></div>
+      <div class="nicho-card"><div class="nicho-icon">💎</div><div class="nicho-name">Bijuteria</div><div class="nicho-desc">Semi-joias, acessórios, pulseiras</div></div>
+      <div class="nicho-card"><div class="nicho-icon">👓</div><div class="nicho-name">Ótica</div><div class="nicho-desc">Óculos, lentes, armações</div></div>
+      <div class="nicho-card"><div class="nicho-icon">👗</div><div class="nicho-name">Moda</div><div class="nicho-desc">Roupas, calçados, acessórios</div></div>
+      <div class="nicho-card"><div class="nicho-icon">🎁</div><div class="nicho-name">Presentes</div><div class="nicho-desc">Lembranças, decoração, papelaria</div></div>
+      <div class="nicho-card"><div class="nicho-icon">💅</div><div class="nicho-name">Beleza</div><div class="nicho-desc">Maquiagem, unhas, cabelos</div></div>
+      <div class="nicho-card"><div class="nicho-icon">🏠</div><div class="nicho-name">Casa e Deco</div><div class="nicho-desc">Utilidades, decoração, enxoval</div></div>
+      <div class="nicho-card"><div class="nicho-icon">🧸</div><div class="nicho-name">Brinquedos</div><div class="nicho-desc">Bebê, infantil, educativo</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="recursos">
+  <div class="c">
+    <div class="sec-tag" style="text-align:center">O que a IA faz por você</div>
+    <h2 class="sec-title" style="text-align:center;max-width:100%;margin-bottom:10px">Tudo o que uma loja precisa,<br>automatizado.</h2>
+    <p class="sec-sub" style="text-align:center;margin:0 auto 44px">Cada funcionalidade foi construída para o varejo brasileiro — do WhatsApp ao Pix, do estoque ao Instagram.</p>
+    <div class="feat-grid">
+
+      <div class="feat-card" style="--clr:#00E5FF">
+        <div class="feat-num">01</div>
+        <div class="feat-icon">🤖</div>
+        <div class="feat-title">Vendas com IA 24/7</div>
+        <div class="feat-desc">A IA atende no WhatsApp, apresenta produtos, negocia preço, reserva estoque e fecha o pedido — sem você precisar estar online.</div>
+        <div class="feat-items">
+          <div class="feat-item"><span class="ok">✓</span>Catálogo com fotos automático</div>
+          <div class="feat-item"><span class="ok">✓</span>Reserva de produto por 2h</div>
+          <div class="feat-item"><span class="ok">✓</span>Desconto por fidelidade</div>
+          <div class="feat-item"><span class="ok">✓</span>PIX, cartão e boleto gerados</div>
+        </div>
+      </div>
+
+      <div class="feat-card" style="--clr:#6C3FE8">
+        <div class="feat-num">02</div>
+        <div class="feat-icon">📦</div>
+        <div class="feat-title">Estoque Inteligente</div>
+        <div class="feat-desc">Controle automático de entrada e saída. Recebe alerta quando vai faltar, prevê demanda e faz cotação com fornecedores.</div>
+        <div class="feat-items">
+          <div class="feat-item"><span class="ok">✓</span>Alerta de estoque baixo no WhatsApp</div>
+          <div class="feat-item"><span class="ok">✓</span>Previsão de demanda com IA</div>
+          <div class="feat-item"><span class="ok">✓</span>Inventário por foto</div>
+          <div class="feat-item"><span class="ok">✓</span>QR Code / código de barras</div>
+        </div>
+      </div>
+
+      <div class="feat-card" style="--clr:#FF6B35">
+        <div class="feat-num">03</div>
+        <div class="feat-icon">📸</div>
+        <div class="feat-title">Marketing Automático</div>
+        <div class="feat-desc">Tira foto do produto, a IA cria a arte, escreve a legenda com hashtags e publica no Instagram, Facebook e X — sozinha.</div>
+        <div class="feat-items">
+          <div class="feat-item"><span class="ok">✓</span>Foto → arte pronta em segundos</div>
+          <div class="feat-item"><span class="ok">✓</span>Publica nas redes automaticamente</div>
+          <div class="feat-item"><span class="ok">✓</span>Campanhas de reengajamento</div>
+          <div class="feat-item"><span class="ok">✓</span>Email marketing no aniversário</div>
+        </div>
+      </div>
+
+      <div class="feat-card" style="--clr:#22c55e">
+        <div class="feat-num">04</div>
+        <div class="feat-icon">💰</div>
+        <div class="feat-title">Financeiro Completo</div>
+        <div class="feat-desc">Caixa diário automatizado, comissão de vendedores, margem de lucro por produto e relatório semanal enviado no WhatsApp.</div>
+        <div class="feat-items">
+          <div class="feat-item"><span class="ok">✓</span>Caixa diário automático</div>
+          <div class="feat-item"><span class="ok">✓</span>Margem de lucro por produto</div>
+          <div class="feat-item"><span class="ok">✓</span>Relatório semanal via WhatsApp</div>
+          <div class="feat-item"><span class="ok">✓</span>Relatório fiscal MEI/ME</div>
+        </div>
+      </div>
+
+      <div class="feat-card" style="--clr:#a855f7">
+        <div class="feat-num">05</div>
+        <div class="feat-icon">⭐</div>
+        <div class="feat-title">NPS e Satisfação</div>
+        <div class="feat-desc">24h após a compra, a IA manda pesquisa de satisfação. Se nota baixa, alerta o dono. Se alta, pede avaliação no Google.</div>
+        <div class="feat-items">
+          <div class="feat-item"><span class="ok">✓</span>NPS automático pós-venda</div>
+          <div class="feat-item"><span class="ok">✓</span>Alerta de cliente insatisfeito</div>
+          <div class="feat-item"><span class="ok">✓</span>Pedido de review Google</div>
+          <div class="feat-item"><span class="ok">✓</span>Melhoria contínua com IA</div>
+        </div>
+      </div>
+
+      <div class="feat-card" style="--clr:#f59e0b">
+        <div class="feat-num">06</div>
+        <div class="feat-icon">🔗</div>
+        <div class="feat-title">Integra com tudo</div>
+        <div class="feat-desc">Importa seu catálogo do Bling, Nuvemshop ou qualquer planilha. Continua rodando seu sistema atual enquanto adota o Kronexa.</div>
+        <div class="feat-items">
+          <div class="feat-item"><span class="ok">✓</span>Importar do Bling e Nuvemshop</div>
+          <div class="feat-item"><span class="ok">✓</span>Sincronização via webhook</div>
+          <div class="feat-item"><span class="ok">✓</span>Modo coexistência</div>
+          <div class="feat-item"><span class="ok">✓</span>API aberta documentada</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FLUXO DE VENDA -->
+<section class="fluxo" id="fluxo">
+  <div class="c" style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center">
+    <div>
+      <div class="sec-tag">Como funciona</div>
+      <h2 class="sec-title">Do WhatsApp ao pagamento<br>em 5 minutos</h2>
+      <div class="flow-steps" style="margin-top:36px">
+        <div class="flow-step"><div class="flow-dot">1</div><div class="flow-content"><div class="flow-label">Cliente</div><div class="flow-title">Manda mensagem no WhatsApp</div><div class="flow-desc">"Oi, quero ver seus perfumes importados disponíveis"</div></div></div>
+        <div class="flow-step"><div class="flow-dot">2</div><div class="flow-content"><div class="flow-label">IA Kronexa</div><div class="flow-title">Mostra catálogo com fotos e preços</div><div class="flow-desc">Apresenta os produtos, verifica estoque em tempo real, aplica desconto se o cliente for fiel.</div></div></div>
+        <div class="flow-step"><div class="flow-dot">3</div><div class="flow-content"><div class="flow-label">Cliente escolhe</div><div class="flow-title">Reserva e recebe link de pagamento</div><div class="flow-desc">Produto reservado por 2h. Link de PIX gerado automaticamente pelo Mercado Pago.</div></div></div>
+        <div class="flow-step"><div class="flow-dot">4</div><div class="flow-content"><div class="flow-label">Após pagamento</div><div class="flow-title">Estoque atualizado, dono notificado</div><div class="flow-desc">Você recebe no WhatsApp: "Nova venda! R$ 197 — Perfume X — João Silva. ✅"</div></div></div>
+        <div class="flow-step" style="padding-bottom:0"><div class="flow-dot" style="background:var(--c)">✓</div><div class="flow-content"><div class="flow-label">24h depois</div><div class="flow-title">NPS automático ao cliente</div><div class="flow-desc">Pesquisa de satisfação. Se 9+, IA pede avaliação no Google.</div></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="demo-label">DEMO — CONVERSA REAL COM A IA</div>
+      <div class="wpp-mockup">
+        <div class="wpp-header">
+          <div class="wpp-avatar">🛍️</div>
+          <div class="wpp-info">
+            <div class="wpp-name">Parfum Store</div>
+            <div class="wpp-status">● Online agora — IA ativa</div>
+          </div>
+        </div>
+        <div class="wpp-body">
+          <div class="msg user">Oi! Tem perfumes importados?</div>
+          <div class="msg bot">Olá! 😊 Temos 12 fragrâncias importadas disponíveis hoje! Aqui estão as mais populares:<br><br>🌹 <b>Chanel N°5</b> - R$ 320<br>✨ <b>Dior Sauvage</b> - R$ 285<br>🌸 <b>Miss Dior</b> - R$ 298<br><br>Qual perfil você prefere? Floral, amadeirado ou fresh?</div>
+          <div class="msg user">Amadeirado, pra presente masculino</div>
+          <div class="msg bot">Perfeito para presente! 🎁 Separei os 3 melhores amadeirados masculinos:<br><br>1️⃣ <b>Dior Sauvage EDP</b><br>   💰 R$ 285 · 100ml · Em estoque ✅<br><br>2️⃣ <b>Bleu de Chanel</b><br>   💰 R$ 340 · 100ml · Últimas 2 unidades ⚠️<br><br>3️⃣ <b>YSL Y EDP</b><br>   💰 R$ 260 · 100ml · Em estoque ✅<br><br>Posso reservar por 2h enquanto você decide. 😉</div>
+          <div class="msg user">Reserva o Bleu de Chanel!</div>
+          <div class="msg bot">✅ <b>Reservado por 2 horas!</b><br><br>📦 Bleu de Chanel 100ml<br>💰 R$ 340,00<br>⏰ Reserva até 14h35<br><br>Pagamento via:<br>⚡ <b>PIX</b> (confirmação imediata)<br>💳 <b>Cartão</b> até 3x sem juros<br><br>Qual prefere?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANOS -->
+<section class="planos" id="planos">
+  <div class="c">
+    <div class="sec-tag" style="text-align:center">Planos e Preços</div>
+    <h2 class="sec-title" style="text-align:center;max-width:100%;margin-bottom:8px">Invista menos que um funcionário.</h2>
+    <p class="sec-sub" style="text-align:center;margin:0 auto 0">7 dias grátis em qualquer plano. Cancele quando quiser.</p>
+    <div class="plans-grid">
+
+      <div class="plan">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price"><sup>R$</sup>247<span class="per">/mês</span></div>
+        <div class="plan-period">Cobrado mensalmente</div>
+        <div class="plan-desc">Para lojas iniciando a automação com IA.</div>
+        <a href="checkout.html?plano=starter" class="plan-btn pb-o">Começar grátis →</a>
+        <div class="plan-feats">
+          <div class="pf"><span class="ok">✓</span>Até 200 produtos</div>
+          <div class="pf"><span class="ok">✓</span>1 loja</div>
+          <div class="pf"><span class="ok">✓</span>Atendimento IA no WhatsApp</div>
+          <div class="pf"><span class="ok">✓</span>Controle de estoque básico</div>
+          <div class="pf"><span class="ok">✓</span>Caixa diário automático</div>
+          <div class="pf"><span class="ok">✓</span>NPS pós-venda</div>
+          <div class="pf"><span class="no">✗</span>Redes sociais automáticas</div>
+          <div class="pf"><span class="no">✗</span>Telegram</div>
+          <div class="pf"><span class="no">✗</span>Relatório de BI</div>
+        </div>
+      </div>
+
+      <div class="plan popular">
+        <div class="pop-tag">⭐ Mais popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price"><sup>R$</sup>497<span class="per">/mês</span></div>
+        <div class="plan-period">Cobrado mensalmente</div>
+        <div class="plan-desc">Automação completa — do atendimento ao marketing.</div>
+        <a href="checkout.html?plano=pro" class="plan-btn pb-g">Começar grátis →</a>
+        <div class="plan-feats">
+          <div class="pf"><span class="ok">✓</span>Produtos ilimitados</div>
+          <div class="pf"><span class="ok">✓</span>1 loja</div>
+          <div class="pf"><span class="ok">✓</span>Tudo do Starter</div>
+          <div class="pf"><span class="ok">✓</span>WhatsApp + Telegram</div>
+          <div class="pf"><span class="ok">✓</span>Posts automáticos Instagram/FB/X</div>
+          <div class="pf"><span class="ok">✓</span>Campanhas de reengajamento</div>
+          <div class="pf"><span class="ok">✓</span>Relatório BI semanal</div>
+          <div class="pf"><span class="ok">✓</span>Previsão de demanda IA</div>
+        </div>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">Franquia</div>
+        <div class="plan-price"><sup>R$</sup>997<span class="per">/mês</span></div>
+        <div class="plan-period">Cobrado mensalmente</div>
+        <div class="plan-desc">Para redes com múltiplas lojas e franquias.</div>
+        <a href="https://wa.me/5561991775904?text=Quero+o+plano+Franquia+Kronexa+Store" target="_blank" class="plan-btn pb-o">Falar com consultor →</a>
+        <div class="plan-feats">
+          <div class="pf"><span class="ok">✓</span>Lojas ilimitadas</div>
+          <div class="pf"><span class="ok">✓</span>Tudo do Pro</div>
+          <div class="pf"><span class="ok">✓</span>Dashboard multi-loja consolidado</div>
+          <div class="pf"><span class="ok">✓</span>White-label configurável</div>
+          <div class="pf"><span class="ok">✓</span>API pública documentada</div>
+          <div class="pf"><span class="ok">✓</span>Integração Bling/Nuvemshop</div>
+          <div class="pf"><span class="ok">✓</span>Suporte dedicado</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRAÇÕES -->
+<section class="integracoes" id="integracoes">
+  <div class="c">
+    <div class="sec-tag" style="text-align:center">Integrações</div>
+    <h2 class="sec-title" style="text-align:center;max-width:100%;margin-bottom:8px">Conecta com o que você já usa</h2>
+    <p class="sec-sub" style="text-align:center;margin:0 auto">Não precisa trocar seu sistema. O Kronexa Store trabalha junto.</p>
+    <div class="int-grid">
+      <div class="int-item">📱 WhatsApp Business</div>
+      <div class="int-item">✈️ Telegram</div>
+      <div class="int-item">📸 Instagram</div>
+      <div class="int-item">👍 Facebook</div>
+      <div class="int-item">🐦 X (Twitter)</div>
+      <div class="int-item">💳 Mercado Pago</div>
+      <div class="int-item">⚡ PIX automático</div>
+      <div class="int-item">📧 Email (Resend)</div>
+      <div class="int-item">🏪 Bling</div>
+      <div class="int-item">🛒 Nuvemshop</div>
+      <div class="int-item">🛍️ Shopify</div>
+      <div class="int-item">🌐 WooCommerce</div>
+      <div class="int-item">📊 Google Analytics</div>
+      <div class="int-item">🗺️ Google Meu Negócio</div>
+      <div class="int-item">☁️ Cloudinary</div>
+      <div class="int-item">🔗 Qualquer API</div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section class="depoimentos">
+  <div class="c">
+    <div class="sec-tag" style="text-align:center">Resultados reais</div>
+    <h2 class="sec-title" style="text-align:center;max-width:100%;margin-bottom:8px">Lojistas que já automatizaram</h2>
+    <div class="dep-grid">
+      <div class="dep-card"><div class="dep-stars">⭐⭐⭐⭐⭐</div><div class="dep-text">"Minha perfumaria vendia 20 produtos por semana pelo WhatsApp. Com o Kronexa Store chegou a 80. A IA atende na madrugada quando eu estou dormindo."</div><div class="dep-author"><div class="dep-avatar">A</div><div><div class="dep-name">Ana Paula Ferreira</div><div class="dep-role">Parfum Boutique · São Paulo</div></div></div></div>
+      <div class="dep-card"><div class="dep-stars">⭐⭐⭐⭐⭐</div><div class="dep-text">"Antes eu gastava 3h por dia respondendo mensagens. Hoje o sistema faz tudo e eu só apareço pra confirmar as vendas grandes. Economizei uma funcionária inteira."</div><div class="dep-author"><div class="dep-avatar">M</div><div><div class="dep-name">Marcos Oliveira</div><div class="dep-role">Bijou Mania · Brasília</div></div></div></div>
+      <div class="dep-card"><div class="dep-stars">⭐⭐⭐⭐⭐</div><div class="dep-text">"O post automático das minhas armações de óculos gerou 15 mensagens no mesmo dia. Nunca tive esse resultado fazendo manual."</div><div class="dep-author"><div class="dep-avatar">C</div><div><div class="dep-name">Carla Santos</div><div class="dep-role">Vision Ótica · Rio de Janeiro</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <div class="c" style="position:relative;z-index:1">
+    <h2 class="cta-title">Sua loja no<br><span style="color:var(--p)">piloto automático.</span></h2>
+    <p class="cta-sub">Comece hoje com 7 dias grátis. Configure em 1 hora. Veja resultados no mesmo dia.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="checkout.html" class="btn-p" style="font-size:16px;padding:16px 36px">🚀 Começar agora — 7 dias grátis</a>
+      <a href="https://wa.me/5561991775904?text=Quero+ver+demo+Kronexa+Store" target="_blank" class="btn-o" style="font-size:16px;padding:16px 36px">Ver demo ao vivo →</a>
+    </div>
+    <div style="margin-top:20px;font-size:13px;color:var(--t3)">Sem cartão de crédito · Cancele quando quiser · Suporte via WhatsApp</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="c">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="foot-logo">KRO<span>NEXA</span> <span style="color:var(--c);font-size:12px;font-weight:600">Store</span></div>
+        <div class="foot-desc">IA completa para lojas de varejo brasileiras. Venda mais, trabalhe menos.</div>
+        <div class="foot-social">
+          <a href="https://wa.me/5561991775904" target="_blank">📱</a>
+          <a href="https://instagram.com" target="_blank">📸</a>
+          <a href="https://kronexa.com.br" target="_blank">🌐</a>
+        </div>
+      </div>
+      <div>
+        <div class="foot-col-title">Produto</div>
+        <div class="foot-links">
+          <a href="#recursos">Recursos</a>
+          <a href="#planos">Planos</a>
+          <a href="#integracoes">Integrações</a>
+          <a href="checkout.html">Assinar</a>
+        </div>
+      </div>
+      <div>
+        <div class="foot-col-title">Empresa</div>
+        <div class="foot-links">
+          <a href="https://kronexa.com.br">Sobre a Kronexa</a>
+          <a href="https://kronexa.com.br/contato.html">Contato</a>
+          <a href="https://mecaniia.com.br">Kronexa Auto</a>
+        </div>
+      </div>
+      <div>
+        <div class="foot-col-title">Legal</div>
+        <div class="foot-links">
+          <a href="termos.html">Termos de Uso</a>
+          <a href="privacidade.html">Privacidade</a>
+          <a href="cancelar.html">Cancelamento</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div class="foot-copy">© 2025 Kronexa Store · Todos os direitos reservados</div>
+      <div class="foot-links-b">
+        <a href="termos.html">Termos</a>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="https://kronexa.com.br">kronexa.com.br</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- STICKY MOBILE CTA -->
+<div class="sticky-cta">
+  <a href="checkout.html" class="btn-p">🚀 Teste grátis por 7 dias</a>
+</div>
+
+</body>
+</html>
