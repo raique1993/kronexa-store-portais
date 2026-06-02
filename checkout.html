@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assinar — Kronexa Store</title>
+<meta name="robots" content="noindex">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#6C3FE8;--pd:#5530c4;--c:#00E5FF;--bg:#08081A;--bg2:#12122A;--bg3:#1a1a35;--bg4:#27272a;--t1:#F0F0FF;--t2:#9090b0;--t3:#505070}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.hd{height:58px;background:rgba(8,8,26,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(108,63,232,.15);display:flex;align-items:center;padding:0 5%;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:17px;font-weight:900;letter-spacing:.5px}.logo span{color:var(--p)}
+.secure{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:5px}
+.hero{text-align:center;padding:48px 20px 36px}
+.hero-tag{font-size:11px;font-weight:700;color:var(--p);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.hero h1{font-size:clamp(26px,4vw,42px);font-weight:900;letter-spacing:-1.5px;margin-bottom:10px}
+.hero p{font-size:15px;color:var(--t2);margin-bottom:20px}
+.trust-row{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:16px}
+.ti{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:5px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:960px;margin:0 auto 60px;padding:0 20px}
+@media(max-width:900px){.plans{grid-template-columns:1fr;max-width:420px}}
+.plan{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:28px;position:relative;transition:all .3s}
+.plan.pop{border-color:var(--p);background:rgba(108,63,232,.05)}
+.pop-tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;font-size:10px;font-weight:900;padding:3px 14px;border-radius:100px;white-space:nowrap}
+.pn{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.pp{font-size:42px;font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:4px}
+.pp sup{font-size:16px;color:var(--t2);vertical-align:top;margin-top:8px}
+.pp .per{font-size:13px;color:var(--t2);font-weight:400}
+.pd{font-size:12px;color:var(--t3);margin-bottom:12px}
+.desc{font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:18px;min-height:38px}
+.btn-plan{display:block;width:100%;padding:14px;text-align:center;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;border:none;transition:all .2s;margin-bottom:20px}
+.bp-g{background:var(--p);color:#fff}.bp-g:hover{background:var(--pd);transform:translateY(-1px)}
+.bp-o{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--t2)}.bp-o:hover{border-color:var(--p);color:var(--p)}
+.feats{display:flex;flex-direction:column;gap:7px}
+.pf{display:flex;gap:7px;font-size:12px;color:var(--t2);align-items:flex-start}
+.pf .ok{color:var(--c);font-weight:700;flex-shrink:0}
+.pf .no{color:var(--bg4);flex-shrink:0}
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:500;align-items:center;justify-content:center;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:var(--bg2);border:1px solid rgba(108,63,232,.2);border-radius:20px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;position:relative;animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--bg4);border:none;color:var(--t2);cursor:pointer;font-size:15px}
+.modal-close:hover{color:var(--t1)}
+.modal-head{padding:22px 22px 0}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--t2);margin-bottom:16px}
+.modal-body{padding:0 22px 22px}
+.step{display:none}.step.show{display:block}
+.si-row{display:flex;gap:6px;margin-bottom:18px}
+.si{flex:1;height:3px;border-radius:2px;background:var(--bg4);transition:background .3s}
+.si.done{background:var(--p)}
+.form-row{margin-bottom:13px}
+.form-row label{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.fi{width:100%;padding:11px 13px;background:var(--bg3);border:1px solid var(--bg4);border-radius:9px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--p)}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pay-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.po{display:flex;align-items:center;gap:12px;padding:13px 15px;background:var(--bg3);border:2px solid var(--bg4);border-radius:11px;cursor:pointer;transition:all .2s}
+.po:hover{border-color:rgba(108,63,232,.3)}
+.po.on{border-color:var(--p);background:rgba(108,63,232,.05)}
+.po input{accent-color:var(--p);width:15px;height:15px;flex-shrink:0}
+.po-icon{font-size:20px;width:32px;text-align:center}
+.po-name{font-size:13px;font-weight:700}
+.po-desc{font-size:11px;color:var(--t3);margin-top:1px}
+.po-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;background:rgba(34,197,94,.1);color:#22c55e}
+.btn-confirm{width:100%;padding:14px;background:var(--p);color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s}
+.btn-confirm:hover{background:var(--pd);transform:translateY(-1px)}
+.btn-confirm:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.card-fields{display:none;margin-top:4px}
+.success{text-align:center;padding:28px 20px}
+.si-icon{font-size:56px;margin-bottom:14px;animation:pop2 .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop2{from{transform:scale(0)}to{transform:scale(1)}}
+.si-title{font-size:22px;font-weight:800;margin-bottom:8px}
+.si-sub{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:22px}
+.next-steps{display:flex;flex-direction:column;gap:8px}
+.ns{display:flex;gap:10px;align-items:center;background:var(--bg3);border-radius:9px;padding:11px 13px}
+.ns-n{width:24px;height:24px;border-radius:50%;background:rgba(108,63,232,.15);color:var(--p);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ns-t{font-size:12px;color:var(--t2)}.ns-t strong{color:var(--t1);display:block}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid rgba(108,63,232,.2);color:var(--t1);padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:999;display:none}
+.toast.show{display:block}
+@media(max-width:500px){.fr2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hd">
+  <a href="/" class="logo">KRO<span>NEXA</span> <span style="color:var(--c);font-size:11px;margin-left:4px">Store</span></a>
+  <div class="secure">🔒 Pagamento 100% seguro</div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">Planos e Preços</div>
+  <h1>Comece a vender mais hoje</h1>
+  <p>7 dias grátis em qualquer plano. Sem contrato. Cancele quando quiser.</p>
+  <div class="trust-row">
+    <div class="ti">✅ 7 dias grátis</div>
+    <div class="ti">🔒 Pagamento seguro</div>
+    <div class="ti">💬 Suporte WhatsApp</div>
+    <div class="ti">❌ Sem fidelidade</div>
+  </div>
+</div>
+
+<div class="plans">
+  <div class="plan">
+    <div class="pn">Starter</div>
+    <div class="pp"><sup>R$</sup>247<span class="per">/mês</span></div>
+    <div class="pd">Cobrado mensalmente</div>
+    <div class="desc">Para lojas iniciando a automação</div>
+    <button class="btn-plan bp-o" onclick="abrirModal('starter')">Começar grátis →</button>
+    <div class="feats">
+      <div class="pf"><span class="ok">✓</span>Até 200 produtos</div>
+      <div class="pf"><span class="ok">✓</span>1 loja</div>
+      <div class="pf"><span class="ok">✓</span>IA no WhatsApp 24/7</div>
+      <div class="pf"><span class="ok">✓</span>Controle de estoque</div>
+      <div class="pf"><span class="ok">✓</span>Caixa diário</div>
+      <div class="pf"><span class="ok">✓</span>NPS automático</div>
+      <div class="pf"><span class="no">✗</span>Redes sociais automáticas</div>
+      <div class="pf"><span class="no">✗</span>Relatório BI</div>
+    </div>
+  </div>
+
+  <div class="plan pop">
+    <div class="pop-tag">⭐ Mais popular</div>
+    <div class="pn">Pro</div>
+    <div class="pp"><sup>R$</sup>497<span class="per">/mês</span></div>
+    <div class="pd">Cobrado mensalmente</div>
+    <div class="desc">Automação completa do varejo</div>
+    <button class="btn-plan bp-g" onclick="abrirModal('pro')">Começar grátis →</button>
+    <div class="feats">
+      <div class="pf"><span class="ok">✓</span>Produtos ilimitados</div>
+      <div class="pf"><span class="ok">✓</span>1 loja</div>
+      <div class="pf"><span class="ok">✓</span>Tudo do Starter</div>
+      <div class="pf"><span class="ok">✓</span>WhatsApp + Telegram</div>
+      <div class="pf"><span class="ok">✓</span>Posts automáticos IG/FB/X</div>
+      <div class="pf"><span class="ok">✓</span>Campanhas reengajamento</div>
+      <div class="pf"><span class="ok">✓</span>Relatório BI semanal</div>
+      <div class="pf"><span class="ok">✓</span>Previsão de demanda IA</div>
+    </div>
+  </div>
+
+  <div class="plan">
+    <div class="pn">Franquia</div>
+    <div class="pp" style="font-size:22px;padding-top:8px">Sob consulta</div>
+    <div class="pd">Preço personalizado</div>
+    <div class="desc">Para redes com múltiplas lojas</div>
+    <a href="https://wa.me/5561991775904?text=Quero+o+plano+Franquia+Kronexa+Store" target="_blank" class="btn-plan bp-o" style="display:block;text-align:center;padding:14px">Falar com consultor →</a>
+    <div class="feats">
+      <div class="pf"><span class="ok">✓</span>Lojas ilimitadas</div>
+      <div class="pf"><span class="ok">✓</span>Tudo do Pro</div>
+      <div class="pf"><span class="ok">✓</span>Dashboard multi-loja</div>
+      <div class="pf"><span class="ok">✓</span>White-label</div>
+      <div class="pf"><span class="ok">✓</span>API pública</div>
+      <div class="pf"><span class="ok">✓</span>Integ. Bling/Nuvemshop</div>
+      <div class="pf"><span class="ok">✓</span>Suporte dedicado</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)fecharModal()">
+<div class="modal" id="modal">
+  <button class="modal-close" onclick="fecharModal()">×</button>
+
+  <div id="s1" class="step show">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Plano Pro — R$ 497/mês</div>
+      <div class="modal-sub">7 dias grátis · Cancele quando quiser</div>
+      <div class="si-row"><div class="si done"></div><div class="si" id="si2"></div><div class="si" id="si3"></div></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label>Nome completo</label><input class="fi" id="nome" placeholder="Maria Silva"></div>
+      <div class="form-row"><label>WhatsApp</label><input class="fi" id="wpp" placeholder="(61) 99999-9999" oninput="maskW(this)"></div>
+      <div class="form-row"><label>Email</label><input class="fi" id="email" type="email" placeholder="maria@loja.com"></div>
+      <div class="form-row"><label>Nome da loja</label><input class="fi" id="loja" placeholder="Parfum Boutique"></div>
+      <div class="form-row"><label>Nicho</label>
+        <select class="fi" id="nicho">
+          <option value="">Selecione seu nicho</option>
+          <option>Perfumaria</option><option>Bijuteria</option><option>Ótica</option>
+          <option>Moda e Acessórios</option><option>Beleza</option><option>Presentes</option>
+          <option>Casa e Decoração</option><option>Outro</option>
+        </select>
+      </div>
+      <div style="background:var(--bg3);border-radius:9px;padding:11px 13px;font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.6">
+        Ao continuar você concorda com os <a href="termos.html" target="_blank" style="color:var(--p)">Termos de Uso</a> e <a href="privacidade.html" target="_blank" style="color:var(--p)">Política de Privacidade</a>. Cancelamento gratuito em <a href="cancelar.html" target="_blank" style="color:var(--p)">7 dias</a>.
+      </div>
+      <button class="btn-confirm" onclick="irS2()">Continuar →</button>
+    </div>
+  </div>
+
+  <div id="s2" class="step">
+    <div class="modal-head">
+      <div class="modal-title">Forma de pagamento</div>
+      <div class="modal-sub" id="ms2">Plano Pro · R$ 497/mês</div>
+      <div class="si-row"><div class="si done"></div><div class="si done"></div><div class="si" id="si3b"></div></div>
+    </div>
+    <div class="modal-body">
+      <div class="pay-opts">
+        <label class="po on" onclick="selPag(this,'pix')"><input type="radio" name="pag" value="pix" checked><div class="po-icon">⚡</div><div><div class="po-name">PIX</div><div class="po-desc">Aprovação imediata · Sem taxa</div></div><span class="po-badge">Recomendado</span></label>
+        <label class="po" onclick="selPag(this,'cartao')"><input type="radio" name="pag" value="cartao"><div class="po-icon">💳</div><div><div class="po-name">Cartão de crédito</div><div class="po-desc">Débito automático mensal · 3x sem juros</div></div></label>
+        <label class="po" onclick="selPag(this,'boleto')"><input type="radio" name="pag" value="boleto"><div class="po-icon">📄</div><div><div class="po-name">Boleto bancário</div><div class="po-desc">Vencimento em 3 dias úteis</div></div></label>
+      </div>
+      <div class="card-fields" id="card-f">
+        <div class="form-row"><label>Número do cartão</label><input class="fi" id="card-n" placeholder="0000 0000 0000 0000" maxlength="19" oninput="maskC(this)"></div>
+        <div class="form-row"><label>Nome no cartão</label><input class="fi" id="card-nm" placeholder="MARIA SILVA" style="text-transform:uppercase"></div>
+        <div class="fr2">
+          <div class="form-row" style="margin:0"><label>Validade</label><input class="fi" id="card-e" placeholder="MM/AA" maxlength="5" oninput="maskE(this)"></div>
+          <div class="form-row" style="margin:0"><label>CVV</label><input class="fi" id="card-c" placeholder="123" maxlength="4" type="password"></div>
+        </div>
+      </div>
+      <button class="btn-confirm" id="btn-pagar" onclick="processar()">Finalizar — começar grátis →</button>
+      <div style="font-size:11px;color:var(--t3);text-align:center;margin-top:8px">🔒 Processado com segurança pelo Mercado Pago</div>
+    </div>
+  </div>
+
+  <div id="s-ok" class="step">
+    <div class="success">
+      <div class="si-icon">🎉</div>
+      <div class="si-title">Bem-vindo ao Kronexa Store!</div>
+      <div class="si-sub">Seus 7 dias grátis começaram. Você vai receber as instruções de acesso pelo WhatsApp em instantes.</div>
+      <div class="next-steps">
+        <div class="ns"><div class="ns-n">1</div><div class="ns-t"><strong>Verifique o WhatsApp</strong>Instruções de configuração enviadas para <span id="ns-wpp"></span></div></div>
+        <div class="ns"><div class="ns-n">2</div><div class="ns-t"><strong>Configure em 1 hora</strong>Nossa equipe te acompanha ao vivo</div></div>
+        <div class="ns"><div class="ns-n">3</div><div class="ns-t"><strong>Primeira venda automática</strong>Ainda hoje, via WhatsApp</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+        <button onclick="window.open('https://wa.me/5561991775904?text=Acabei+de+assinar+o+Kronexa+Store!','_blank')" style="padding:13px;background:var(--p);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:800;cursor:pointer">📱 Abrir WhatsApp agora</button>
+        <button onclick="fecharModal()" style="padding:13px;background:transparent;border:none;color:var(--t2);cursor:pointer;font-size:14px">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let planoAtual='pro';
+const precos={starter:247,pro:497};
+
+function abrirModal(p){
+  planoAtual=p;
+  const nm=p==='starter'?'Starter':'Pro';
+  document.getElementById('modal-title').textContent=`Plano ${nm} — R$ ${precos[p]}/mês`;
+  document.getElementById('ms2').textContent=`Plano ${nm} · R$ ${precos[p]}/mês`;
+  mostrarStep('s1');
+  document.getElementById('modal-bg').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function fecharModal(){document.getElementById('modal-bg').classList.remove('show');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharModal()});
+
+function mostrarStep(id){document.querySelectorAll('.step').forEach(s=>s.classList.remove('show'));document.getElementById(id).classList.add('show');}
+
+function irS2(){
+  if(!document.getElementById('nome').value.trim()){toast('Informe seu nome');return;}
+  if(!document.getElementById('wpp').value.replace(/\D/g,'').length>=10===false){toast('WhatsApp inválido');return;}
+  if(!document.getElementById('email').value.includes('@')){toast('Email inválido');return;}
+  if(!document.getElementById('loja').value.trim()){toast('Informe o nome da loja');return;}
+  document.getElementById('si2').classList.add('done');
+  mostrarStep('s2');
+}
+
+function selPag(el,tipo){
+  document.querySelectorAll('.po').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('card-f').style.display=tipo==='cartao'?'block':'none';
+}
+
+async function processar(){
+  const btn=document.getElementById('btn-pagar');
+  btn.disabled=true;btn.textContent='⏳ Processando...';
+
+  // Salvar lead no Supabase
+  const dados={
+    tipo:'NOVO_LEAD_STORE',
+    mensagem:`Kronexa Store Lead: ${document.getElementById('nome').value} | ${document.getElementById('loja').value} | ${document.getElementById('nicho').value} | ${document.getElementById('email').value} | ${document.getElementById('wpp').value} | Plano: ${planoAtual.toUpperCase()} | R$${precos[planoAtual]}`,
+    tenant_id:'a1b2c3d4-0000-0000-0000-000000000001'
+  };
+  fetch('https://tcjynyfusqkqtdohnyzq.supabase.co/rest/v1/comunicacoes',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':'sb_publishable_gNJhc4WCS9MnnmDAL2T6Vg_AQ71_Vid','Authorization':'Bearer sb_publishable_gNJhc4WCS9MnnmDAL2T6Vg_AQ71_Vid'},
+    body:JSON.stringify(dados)
+  }).catch(()=>{});
+
+  document.getElementById('ns-wpp').textContent=document.getElementById('wpp').value;
+  document.getElementById('si3').classList.add('done');
+  document.getElementById('si3b').classList.add('done');
+  setTimeout(()=>{mostrarStep('s-ok');btn.disabled=false;btn.textContent='Finalizar — começar grátis →';},1500);
+}
+
+function maskW(el){let v=el.value.replace(/\D/g,'');if(v.length<=11)v=v.replace(/^(\d{2})(\d{5})(\d{4}).*/,'($1) $2-$3');el.value=v;}
+function maskC(el){let v=el.value.replace(/\D/g,'').substring(0,16);el.value=v.replace(/(\d{4})(?=\d)/g,'$1 ');}
+function maskE(el){let v=el.value.replace(/\D/g,'');if(v.length>=2)v=v.substring(0,2)+'/'+v.substring(2,4);el.value=v;}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+const params=new URLSearchParams(location.search);
+if(params.get('plano'))setTimeout(()=>abrirModal(params.get('plano')),300);
+</script>
+</body>
+</html>
