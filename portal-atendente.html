@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portal Atendente — Kronexa Store</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#6C3FE8;--c:#00E5FF;--bg:#08081A;--bg2:#12122A;--bg3:#1a1a35;--t1:#F0F0FF;--t2:#9090b0;--t3:#505070}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,sans-serif;-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.hd{height:56px;background:var(--bg2);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0}
+.hd-logo{font-size:15px;font-weight:900}.hd-logo span{color:var(--p)}
+.hd-tag{font-size:10px;font-weight:700;background:rgba(108,63,232,.2);color:var(--p);padding:2px 8px;border-radius:100px}
+.hd-status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.layout{flex:1;display:grid;grid-template-columns:280px 1fr 300px;overflow:hidden}
+.panel{overflow-y:auto;border-right:1px solid rgba(255,255,255,.06)}
+.panel:last-child{border:none}
+.panel-title{padding:14px 16px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;background:var(--bg);z-index:1;display:flex;align-items:center;justify-content:space-between}
+.panel-title .count{background:var(--p);color:#fff;font-size:10px;padding:1px 7px;border-radius:100px}
+/* Conversas */
+.conv-item{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .2s}
+.conv-item:hover{background:rgba(255,255,255,.03)}
+.conv-item.active{background:rgba(108,63,232,.1);border-left:2px solid var(--p)}
+.conv-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.conv-name{font-size:13px;font-weight:700}
+.conv-time{font-size:10px;color:var(--t3)}
+.conv-msg{font-size:12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conv-badge{display:inline-block;padding:2px 6px;border-radius:100px;font-size:10px;font-weight:700}
+.cb-new{background:rgba(34,197,94,.15);color:#22c55e}
+.cb-wait{background:rgba(245,158,11,.1);color:#fbbf24}
+.cb-done{background:rgba(255,255,255,.06);color:var(--t3)}
+/* Chat */
+.chat-area{display:flex;flex-direction:column}
+.chat-header{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.chat-avatar{width:36px;height:36px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff}
+.chat-name{font-size:14px;font-weight:700}
+.chat-sub{font-size:11px;color:var(--t2)}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.msg{max-width:75%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.5}
+.msg.cliente{background:var(--bg2);align-self:flex-start;border-radius:4px 12px 12px 12px}
+.msg.ia{background:rgba(108,63,232,.2);border:1px solid rgba(108,63,232,.3);align-self:flex-start;border-radius:4px 12px 12px 12px}
+.msg.humano{background:var(--p);align-self:flex-end;border-radius:12px 4px 12px 12px}
+.msg-label{font-size:10px;color:var(--t3);margin-bottom:3px}
+.msg-time{font-size:10px;color:var(--t3);margin-top:3px;text-align:right}
+.chat-input{padding:12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;flex-shrink:0}
+.chat-input input{flex:1;padding:10px 13px;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:var(--t1);font-size:13px;outline:none}
+.chat-input input:focus{border-color:var(--p)}
+.chat-input button{padding:10px 16px;background:var(--p);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+/* Info lateral */
+.info-section{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.info-label{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.info-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.info-row:last-child{border:none}
+.info-key{color:var(--t2)}.info-val{font-weight:600;color:var(--t1)}
+.action-btns{display:flex;flex-direction:column;gap:6px;padding:14px 16px}
+.ab{padding:10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .2s;width:100%;text-align:left;display:flex;gap:8px;align-items:center}
+.ab-p{background:var(--p);color:#fff}.ab-p:hover{background:#5530c4}
+.ab-o{background:var(--bg3);color:var(--t1);border:1px solid rgba(255,255,255,.1)}.ab-o:hover{border-color:var(--p)}
+/* Empty state */
+.empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--t3)}
+.empty-icon{font-size:48px;opacity:.3}
+.empty-text{font-size:14px}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-logo">KRO<span>NEXA</span></div>
+  <div class="hd-tag">STORE · ATENDENTE</div>
+  <div class="hd-status"><div class="status-dot"></div>IA ativa — atendendo</div>
+</header>
+<div class="layout">
+  <!-- LISTA DE CONVERSAS -->
+  <div class="panel" id="conv-list">
+    <div class="panel-title">Conversas <span class="count" id="conv-count">0</span></div>
+    <div id="conversas-container">
+      <div class="empty"><div class="empty-icon">💬</div><div class="empty-text">Carregando...</div></div>
+    </div>
+  </div>
+
+  <!-- ÁREA DE CHAT -->
+  <div class="panel chat-area" id="chat-panel">
+    <div class="empty" id="chat-empty">
+      <div class="empty-icon">👈</div>
+      <div class="empty-text">Selecione uma conversa</div>
+    </div>
+    <div id="chat-content" style="display:none;flex-direction:column;flex:1">
+      <div class="chat-header">
+        <div class="chat-avatar" id="chat-avatar">?</div>
+        <div>
+          <div class="chat-name" id="chat-name">—</div>
+          <div class="chat-sub" id="chat-sub">—</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button onclick="assumirConversa()" style="padding:6px 12px;background:var(--p);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer">Assumir</button>
+        </div>
+      </div>
+      <div class="chat-msgs" id="chat-msgs"></div>
+      <div class="chat-input">
+        <input type="text" id="msg-input" placeholder="Mensagem como humano..." onkeydown="if(event.key==='Enter')enviarMsg()">
+        <button onclick="enviarMsg()">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO DO CLIENTE -->
+  <div class="panel" id="info-panel">
+    <div class="panel-title">Cliente & Pedido</div>
+    <div class="info-section">
+      <div class="info-label">Cliente</div>
+      <div class="info-row"><span class="info-key">Nome</span><span class="info-val" id="i-nome">—</span></div>
+      <div class="info-row"><span class="info-key">Telefone</span><span class="info-val" id="i-tel">—</span></div>
+      <div class="info-row"><span class="info-key">Segmento</span><span class="info-val" id="i-seg">—</span></div>
+      <div class="info-row"><span class="info-key">Total gasto</span><span class="info-val" id="i-gasto">R$ 0</span></div>
+      <div class="info-row"><span class="info-key">Pedidos</span><span class="info-val" id="i-ped">0</span></div>
+    </div>
+    <div class="info-section">
+      <div class="info-label">Pedido atual</div>
+      <div class="info-row"><span class="info-key">Status</span><span class="info-val" id="i-status">Nenhum</span></div>
+      <div class="info-row"><span class="info-key">Total</span><span class="info-val" id="i-total">R$ 0</span></div>
+      <div class="info-row"><span class="info-key">Pagamento</span><span class="info-val" id="i-pag">—</span></div>
+    </div>
+    <div class="action-btns">
+      <button class="ab ab-p" onclick="criarPedidoManual()">🛒 Criar pedido manual</button>
+      <button class="ab ab-o" onclick="abrirCatalogo()">📦 Ver catálogo</button>
+      <button class="ab ab-o" onclick="aplicarDesconto()">🏷️ Aplicar desconto</button>
+      <button class="ab ab-o" onclick="gerarLinkPix()">⚡ Gerar link PIX</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://tcjynyfusqkqtdohnyzq.supabase.co';
+const SB_KEY = 'sb_publishable_gNJhc4WCS9MnnmDAL2T6Vg_AQ71_Vid';
+const { createClient } = supabase;
+const sb = createClient(SB_URL, SB_KEY);
+
+let convAtual = null;
+
+// Carregar conversas mock (substituir por dados reais quando Kronexa Store DB estiver pronto)
+const mockConversas = [
+  {id:'1',nome:'Maria Silva',tel:'61999991111',msg:'Oi, tem o perfume Chanel?',hora:'14:32',status:'new',pedido:null},
+  {id:'2',nome:'João Oliveira',tel:'61999992222',msg:'Quero saber sobre bijuterias douradas',hora:'13:15',status:'wait',pedido:{total:150,status:'PENDENTE',pag:'PIX'}},
+  {id:'3',nome:'Ana Costa',tel:'61999993333',msg:'Meu pedido já foi separado?',hora:'11:45',status:'done',pedido:{total:280,status:'PRONTO',pag:'CARTAO'}},
+];
+
+function renderConversas(convs) {
+  const c = document.getElementById('conversas-container');
+  document.getElementById('conv-count').textContent = convs.length;
+  c.innerHTML = convs.map(cv => `
+    <div class="conv-item ${convAtual===cv.id?'active':''}" onclick="abrirConversa('${cv.id}')">
+      <div class="conv-top">
+        <span class="conv-name">${cv.nome}</span>
+        <span class="conv-time">${cv.hora}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:3px">
+        <span class="conv-msg">${cv.msg}</span>
+        <span class="conv-badge ${cv.status==='new'?'cb-new':cv.status==='wait'?'cb-wait':'cb-done'}">${cv.status==='new'?'Novo':cv.status==='wait'?'Aguard.':'OK'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function abrirConversa(id) {
+  convAtual = id;
+  const cv = mockConversas.find(c=>c.id===id);
+  if (!cv) return;
+
+  document.getElementById('chat-empty').style.display='none';
+  const cc = document.getElementById('chat-content');
+  cc.style.display='flex';
+
+  document.getElementById('chat-avatar').textContent = cv.nome[0].toUpperCase();
+  document.getElementById('chat-name').textContent = cv.nome;
+  document.getElementById('chat-sub').textContent = cv.tel;
+  document.getElementById('i-nome').textContent = cv.nome;
+  document.getElementById('i-tel').textContent = cv.tel;
+  document.getElementById('i-seg').textContent = 'NORMAL';
+  document.getElementById('i-status').textContent = cv.pedido?.status || 'Nenhum';
+  document.getElementById('i-total').textContent = cv.pedido ? `R$ ${cv.pedido.total}` : 'R$ 0';
+  document.getElementById('i-pag').textContent = cv.pedido?.pag || '—';
+
+  const msgs = [
+    {r:'cliente',t:cv.msg,h:cv.hora},
+    {r:'ia',t:'Olá! 😊 Deixa eu verificar para você...'},
+    {r:'ia',t:'Encontrei várias opções! Qual você prefere? Floral, amadeirado ou fresh?'},
+  ];
+
+  document.getElementById('chat-msgs').innerHTML = msgs.map(m=>`
+    <div>
+      <div class="msg-label">${m.r==='cliente'?'👤 '+cv.nome:m.r==='ia'?'🤖 IA Kronexa':'👨 Atendente'}</div>
+      <div class="msg ${m.r}">${m.t}</div>
+      ${m.h?`<div class="msg-time">${m.h}</div>`:''}
+    </div>`).join('');
+
+  renderConversas(mockConversas);
+}
+
+function enviarMsg() {
+  const input = document.getElementById('msg-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const container = document.getElementById('chat-msgs');
+  container.innerHTML += `<div><div class="msg-label">👨 Atendente</div><div class="msg humano">${msg}</div></div>`;
+  input.value = '';
+  container.scrollTop = container.scrollHeight;
+}
+
+function assumirConversa() { alert('Conversa assumida! A IA foi pausada para este cliente.'); }
+function criarPedidoManual() { alert('Funcionalidade disponível após configurar o banco do Kronexa Store.'); }
+function abrirCatalogo() { alert('Catálogo disponível após configurar o banco do Kronexa Store.'); }
+function aplicarDesconto() { alert('Insira o % de desconto e o pedido será atualizado automaticamente.'); }
+function gerarLinkPix() { alert('Link PIX gerado via Mercado Pago — será enviado ao cliente.'); }
+
+renderConversas(mockConversas);
+</script>
+</body>
+</html>
