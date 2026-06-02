@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /portal-admin.html
+Disallow: /portal-atendente.html
+Sitemap: https://store.kronexa.com.br/sitemap.xml
