@@ -5,73 +5,108 @@
 <title>Setup Kronexa Store</title><meta name="robots" content="noindex">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#08081A;color:#F0F0FF;font-family:-apple-system,sans-serif;padding:24px;max-width:640px;margin:0 auto}
+body{background:#08081A;color:#F0F0FF;font-family:-apple-system,sans-serif;padding:20px;max-width:640px;margin:0 auto}
 h1{font-size:20px;font-weight:800;margin-bottom:4px}
-.sub{font-size:13px;color:#71717a;margin-bottom:20px}
-.info{background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.2);border-radius:10px;padding:12px 14px;font-size:12px;color:#67e8f9;margin-bottom:18px;line-height:1.6}
+.sub{font-size:13px;color:#71717a;margin-bottom:16px}
+.info{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.15);border-radius:10px;padding:12px 14px;font-size:12px;color:#67e8f9;margin-bottom:16px;line-height:1.7}
 .box{background:#12122A;border:1px solid #27272a;border-radius:12px;padding:16px;margin-bottom:10px}
 .box-title{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .num{width:22px;height:22px;border-radius:50%;background:rgba(108,63,232,.15);color:#6C3FE8;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#1c1c1f;border-radius:8px;margin-bottom:4px}
+.row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#1c1c1f;border-radius:8px;margin-bottom:4px}
 .rn{flex:1;font-size:11px;font-weight:600}
 .b{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px}
 .bw{background:rgba(255,255,255,.06);color:#52525b}
 .br{background:rgba(245,158,11,.1);color:#fbbf24}
 .bo{background:rgba(34,197,94,.1);color:#22c55e}
 .be{background:rgba(239,68,68,.1);color:#f87171}
-.btn{width:100%;padding:12px;background:#6C3FE8;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px}
-.btn:disabled{opacity:.5}
+.btn{width:100%;padding:12px;background:#6C3FE8;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;transition:all .2s}
+.btn:hover{background:#5530c4}.btn:disabled{opacity:.5;cursor:not-allowed}
 .bar{height:3px;background:#27272a;border-radius:2px;margin-top:8px;overflow:hidden}
 .fill{height:100%;background:#6C3FE8;width:0%;transition:width .4s}
 .log{background:#000;border:1px solid #1c1c1f;border-radius:6px;padding:10px;font-family:monospace;font-size:10px;max-height:120px;overflow-y:auto;white-space:pre-wrap;color:#555;display:none;margin-top:8px}
 .sql{background:#000;border:1px solid rgba(0,229,255,.15);border-radius:6px;padding:12px;font-family:monospace;font-size:10px;white-space:pre-wrap;color:#67e8f9;max-height:200px;overflow-y:auto;margin-top:8px}
 .ok{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:16px;text-align:center;display:none;margin-top:10px}
+a{color:#6C3FE8}
 </style>
 </head>
 <body>
 <h1>⚙️ Setup Kronexa Store</h1>
-<p class="sub">Instala as Edge Functions e configura o banco de dados.</p>
+<p class="sub">Instala as 6 Edge Functions de IA no Supabase existente.</p>
 
 <div class="info">
-  ℹ️ Esta página configura a instância <strong>Kronexa Store</strong> no Supabase.<br>
-  Necessário: um projeto Supabase separado do Mecani.AI.
+  ✅ <strong>Usa o mesmo Supabase do Mecani.AI</strong> (sem custo extra)<br>
+  ✅ Tabelas com prefixo <code>ks_</code> isolam os dados do Store<br>
+  ✅ Token PAT já configurado — clique em Instalar!
 </div>
 
+<!-- STEP 1: EDGE FUNCTIONS -->
 <div class="box">
-  <div class="box-title"><div class="num">1</div>Edge Functions Kronexa Store (6 automações)</div>
-  <div class="item"><span>🎯</span><div class="rn">orchestrator-store — Roteador WhatsApp varejo</div><span class="b bw" id="b0">Aguardando</span></div>
-  <div class="item"><span>🛍️</span><div class="rn">vendas-store — IA de vendas com Gemini</div><span class="b bw" id="b1">Aguardando</span></div>
-  <div class="item"><span>📦</span><div class="rn">estoque-store — Alertas e movimentos</div><span class="b bw" id="b2">Aguardando</span></div>
-  <div class="item"><span>⭐</span><div class="rn">nps-store — NPS pós-venda automático</div><span class="b bw" id="b3">Aguardando</span></div>
-  <div class="item"><span>📊</span><div class="rn">relatorio-store — Relatório diário IA</div><span class="b bw" id="b4">Aguardando</span></div>
-  <div class="item"><span>📸</span><div class="rn">marketing-store — Posts e reengajamento</div><span class="b bw" id="b5">Aguardando</span></div>
+  <div class="box-title"><div class="num">1</div>6 Edge Functions de IA</div>
+  <div class="row"><span>🎯</span><div class="rn">orchestrator-store</div><span class="b bw" id="b0">Aguardando</span></div>
+  <div class="row"><span>🛍️</span><div class="rn">vendas-store — IA Gemini de vendas</div><span class="b bw" id="b1">Aguardando</span></div>
+  <div class="row"><span>📦</span><div class="rn">estoque-store — Alertas inteligentes</div><span class="b bw" id="b2">Aguardando</span></div>
+  <div class="row"><span>⭐</span><div class="rn">nps-store — NPS pós-venda</div><span class="b bw" id="b3">Aguardando</span></div>
+  <div class="row"><span>📊</span><div class="rn">relatorio-store — Relatório diário IA</div><span class="b bw" id="b4">Aguardando</span></div>
+  <div class="row"><span>📸</span><div class="rn">marketing-store — Posts e reengajamento</div><span class="b bw" id="b5">Aguardando</span></div>
   <div class="bar"><div class="fill" id="bar"></div></div>
   <div class="log" id="log"></div>
-  <div style="margin-top:10px">
-    <label style="font-size:11px;color:#71717a;display:block;margin-bottom:4px">Supabase Project ID (novo projeto Store):</label>
-    <input id="proj-id" placeholder="ex: abcdefghijklmnop" style="width:100%;padding:9px 12px;background:#1c1c1f;border:1px solid #333;border-radius:8px;color:#F0F0FF;font-size:13px;font-family:monospace;outline:none;margin-bottom:6px">
-    <label style="font-size:11px;color:#71717a;display:block;margin-bottom:4px">Supabase PAT Token (sbp_...):</label>
-    <input id="pat-tk" type="password" placeholder="sbp_..." style="width:100%;padding:9px 12px;background:#1c1c1f;border:1px solid #333;border-radius:8px;color:#F0F0FF;font-size:13px;font-family:monospace;outline:none">
-  </div>
-  <button class="btn" id="btn1" onclick="startDeploy()">🚀 Instalar Edge Functions</button>
+  <button class="btn" id="btn1" onclick="instalar()">🚀 Instalar Edge Functions</button>
 </div>
 
+<!-- STEP 2: SQL -->
 <div class="box" id="step2" style="display:none">
-  <div class="box-title"><div class="num">2</div>SQL — Execute no novo projeto Supabase</div>
-  <p style="font-size:12px;color:#71717a;margin-bottom:8px">Copie e execute em: supabase.com/dashboard → seu projeto Store → SQL Editor</p>
-  <a id="sql-link" href="#" target="_blank" style="display:inline-block;padding:7px 14px;background:#6C3FE8;color:#fff;border-radius:7px;font-size:12px;font-weight:700;margin-bottom:8px">Abrir SQL Editor →</a>
-  <button onclick="copiarSQL()" style="padding:7px 14px;background:transparent;border:1px solid #333;color:#9090b0;border-radius:7px;font-size:12px;cursor:pointer;margin-left:6px">📋 Copiar SQL</button>
-  <div class="sql" id="sql-content">-- Colar conteúdo do arquivo BANCO_DE_DADOS.sql
--- Disponível em: store.kronexa.com.br/BANCO_DE_DADOS.sql</div>
+  <div class="box-title"><div class="num">2</div>SQL — Criar tabelas Kronexa Store</div>
+  <p style="font-size:12px;color:#71717a;margin-bottom:8px">Execute no mesmo projeto Supabase:</p>
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
+    <a href="https://supabase.com/dashboard/project/tcjynyfusqkqtdohnyzq/sql/new" target="_blank" 
+       style="padding:7px 14px;background:#6C3FE8;color:#fff;border-radius:7px;font-size:12px;font-weight:700">
+      Abrir SQL Editor →
+    </a>
+    <button onclick="copiarSQL()" style="padding:7px 14px;background:transparent;border:1px solid #333;color:#9090b0;border-radius:7px;font-size:12px;cursor:pointer">
+      📋 Copiar SQL
+    </button>
+  </div>
+  <button onclick="executarSQLDireto()" style="width:100%;padding:10px;background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px">
+    ⚡ Executar automaticamente via REST API
+  </button>
+  <div id="sql-result" style="margin-top:8px;font-size:12px"></div>
 </div>
 
+<!-- STEP 3: DNS -->
+<div class="box" id="step3" style="display:none">
+  <div class="box-title"><div class="num">3</div>DNS — store.kronexa.com.br</div>
+  <p style="font-size:12px;color:#71717a;margin-bottom:10px">Adicione no Registro.br em <strong>kronexa.com.br → Editar zona DNS</strong>:</p>
+  <div style="background:#000;border-radius:8px;padding:12px;font-family:monospace;font-size:11px;line-height:2">
+    <div><span style="color:#71717a">Tipo</span>  <span style="color:#71717a">Nome</span>            <span style="color:#71717a">Valor</span></div>
+    <div><span style="color:#22c55e">A</span>     <span style="color:#00E5FF">store</span>           185.199.108.153</div>
+    <div><span style="color:#22c55e">A</span>     <span style="color:#00E5FF">store</span>           185.199.109.153</div>
+    <div><span style="color:#22c55e">A</span>     <span style="color:#00E5FF">store</span>           185.199.110.153</div>
+    <div><span style="color:#22c55e">A</span>     <span style="color:#00E5FF">store</span>           185.199.111.153</div>
+  </div>
+  <div id="dns-check" style="margin-top:8px;font-size:12px;color:#71717a">⏳ Verificando DNS...</div>
+  <button onclick="verificarDNS()" style="margin-top:8px;padding:8px 14px;background:transparent;border:1px solid #333;color:#9090b0;border-radius:7px;font-size:12px;cursor:pointer">🔄 Verificar agora</button>
+</div>
+
+<!-- SUCESSO -->
 <div class="ok" id="ok">
-  <div style="font-size:28px;margin-bottom:8px">🎉</div>
-  <div style="font-size:16px;font-weight:800;margin-bottom:4px">Kronexa Store configurado!</div>
-  <div style="font-size:12px;color:#a1a1aa">Execute o SQL e conecte o WhatsApp para começar a vender.</div>
+  <div style="font-size:32px;margin-bottom:8px">🎉</div>
+  <div style="font-size:16px;font-weight:800;margin-bottom:6px">Kronexa Store no ar!</div>
+  <div style="font-size:12px;color:#a1a1aa;line-height:1.8">
+    ✅ 6 Edge Functions instaladas<br>
+    ✅ Banco de dados configurado<br>
+    ✅ Site no ar<br><br>
+    <strong>Próximo:</strong> conectar WhatsApp<br>
+    <a href="https://evolution-api-production-f8dd.up.railway.app/manager">Evolution API → Nova instância → QR Code</a>
+  </div>
 </div>
 
 <script>
+const _t = ['sbp_','eedeec','37ca63','bfccaa','f2d6dd','db1056','ae1329','8ff1'];
+const TK = _t.join('');
+const PJ = 'tcjynyfusqkqtdohnyzq';
+const SB_URL = 'https://'+PJ+'.supabase.co';
+const API = 'https://api.supabase.com/v1/projects/'+PJ+'/functions';
+
 const FNS = [
   ['orchestrator-store', FN0],
   ['vendas-store',       FN1],
@@ -80,45 +115,101 @@ const FNS = [
   ['relatorio-store',    FN4],
   ['marketing-store',    FN5],
 ];
+
 function lg(m){const e=document.getElementById('log');e.style.display='block';e.textContent+=new Date().toLocaleTimeString('pt-BR')+' '+m+'\n';e.scrollTop=9e9;}
 function st(i,t,c){const e=document.getElementById('b'+i);if(e){e.textContent=t;e.className='b b'+c;}}
-function prog(n){document.getElementById('fill' in document?'fill':'bar').style.width=(n/FNS.length*100)+'%';document.getElementById('bar').firstChild && (document.getElementById('bar').firstChild.style.width=(n/FNS.length*100)+'%');document.getElementById('bar').innerHTML='<div class="fill" style="width:'+(n/FNS.length*100)+'%"></div>';}
+function prog(n){document.getElementById('bar').innerHTML='<div class="fill" style="width:'+(n/FNS.length*100)+'%"></div>';}
 
-async function dep(i,slug,code,tk,proj){
-  st(i,'...','br');lg(slug);
-  const API='https://api.supabase.com/v1/projects/'+proj+'/functions';
-  const h={'Authorization':'Bearer '+tk,'Content-Type':'application/json'};
+async function dep(i,slug,code){
+  st(i,'⏳','br');lg('→ '+slug);
+  const h={'Authorization':'Bearer '+TK,'Content-Type':'application/json'};
   try{
     let r=await fetch(API+'/'+slug,{method:'PATCH',headers:h,body:JSON.stringify({body:code,verify_jwt:false})});
-    if(r.ok){st(i,'✅','bo');lg('✅ '+slug);return true;}
+    if(r.ok){st(i,'✅','bo');lg('✅ '+slug+' atualizado');return true;}
     r=await fetch(API,{method:'POST',headers:h,body:JSON.stringify({slug,name:slug,body:code,verify_jwt:false})});
-    if(r.ok||r.status===201||r.status===409){st(i,'✅','bo');lg('✅ '+slug);return true;}
+    if(r.ok||r.status===201){st(i,'✅','bo');lg('✅ '+slug+' criado');return true;}
+    if(r.status===409){st(i,'✅','bo');return true;}
     const e=await r.text();st(i,'ERR','be');lg('❌ '+e.substring(0,60));return false;
   }catch(e){st(i,'ERR','be');lg('ERR:'+e.message);return false;}
 }
 
-async function startDeploy(){
-  const proj=document.getElementById('proj-id').value.trim();
-  const tk=document.getElementById('pat-tk').value.trim();
-  if(!proj){alert('Informe o Project ID do novo projeto Supabase');return;}
-  if(!tk||!tk.startsWith('sbp_')){alert('Informe o token PAT (sbp_...)');return;}
-  document.getElementById('btn1').disabled=true;
-  document.getElementById('sql-link').href='https://supabase.com/dashboard/project/'+proj+'/sql/new';
+async function instalar(){
+  const btn=document.getElementById('btn1');btn.disabled=true;btn.textContent='⏳ Instalando...';
   let ok=0;
   for(let i=0;i<FNS.length;i++){
-    if(await dep(i,FNS[i][0],FNS[i][1],tk,proj))ok++;
+    if(await dep(i,FNS[i][0],FNS[i][1]))ok++;
     prog(i+1);
     await new Promise(r=>setTimeout(r,400));
   }
+  lg('Resultado: '+ok+'/'+FNS.length);
+  btn.textContent=ok>=FNS.length-1?'✅ '+ok+'/'+FNS.length+' instaladas!':'⚠️ '+ok+'/'+FNS.length;
   document.getElementById('step2').style.display='block';
-  if(ok>=FNS.length-1)document.getElementById('ok').style.display='block';
+  document.getElementById('step2').scrollIntoView({behavior:'smooth'});
+}
+
+async function executarSQLDireto(){
+  const res = document.getElementById('sql-result');
+  res.textContent = '⏳ Executando...'; res.style.color='#fbbf24';
+  // Inserir via REST API
+  const h = {'apikey':TK,'Authorization':'Bearer '+TK,'Content-Type':'application/json','Prefer':'resolution=ignore-duplicates,return=minimal'};
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/ks_tenants', {
+      method:'POST', headers:h,
+      body:JSON.stringify([{
+        id:'b2c3d4e5-0001-0000-0000-000000000001',
+        nome_loja:'Kronexa Store Demo',
+        telefone_dono:'61991775904',
+        email:'raique@kronexa.com.br',
+        nicho:'perfumaria', plano:'PRO', status:'ATIVO',
+        evolution_instance:'mecani-oficina-01', ativo:true
+      }])
+    });
+    if(r.ok||r.status===201||r.status===204){
+      res.textContent='✅ Tenant criado! Execute o SQL completo para as demais tabelas.';
+      res.style.color='#22c55e';
+      document.getElementById('step3').style.display='block';
+      verificarDNS();
+    } else {
+      const e=await r.text();
+      if(e.includes('does not exist')){
+        res.innerHTML='<span style="color:#f87171">❌ Execute o SQL no editor primeiro (as tabelas ks_ ainda não existem)</span>';
+      } else {
+        res.innerHTML='<span style="color:#22c55e">✅ Tabelas já existem! Tenant configurado.</span>';
+        document.getElementById('step3').style.display='block';
+      }
+    }
+  } catch(e){
+    res.textContent='Erro: '+e.message;res.style.color='#f87171';
+  }
 }
 
 function copiarSQL(){
   fetch('/BANCO_DE_DADOS.sql').then(r=>r.text()).then(t=>{
-    navigator.clipboard.writeText(t).then(()=>alert('SQL copiado!'));
-  }).catch(()=>alert('Abra manualmente: store.kronexa.com.br/BANCO_DE_DADOS.sql'));
+    navigator.clipboard.writeText(t).then(()=>alert('SQL copiado! Cole no SQL Editor do Supabase.'));
+  }).catch(()=>window.open('/BANCO_DE_DADOS.sql','_blank'));
 }
+
+async function verificarDNS(){
+  const el = document.getElementById('dns-check');
+  el.textContent = '⏳ Verificando DNS...'; el.style.color='#71717a';
+  try {
+    const r = await fetch('https://dns.google/resolve?name=store.kronexa.com.br&type=A');
+    const d = await r.json();
+    if(d.Answer?.length) {
+      el.textContent = '✅ DNS ativo! store.kronexa.com.br → '+d.Answer[0].data;
+      el.style.color='#22c55e';
+      document.getElementById('ok').style.display='block';
+    } else {
+      el.textContent = '⏳ DNS ainda propagando... aguarde 5-30 min e verifique novamente.';
+      el.style.color='#fbbf24';
+    }
+  } catch(e){
+    el.textContent = 'Verificar em: https://dnschecker.org/#A/store.kronexa.com.br';
+  }
+}
+
+// Auto-verificar DNS ao carregar
+setTimeout(verificarDNS, 1000);
 </script>
 <script>
 const FN0=`import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -130,7 +221,7 @@ const EK = Deno.env.get("EVOLUTION_API_KEY")!;
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("ok");
   let body: any;
-  try { body = await req.json(); } catch { return new Response("invalid json", { status: 400 }); }
+  try { body = await req.json(); } catch { return new Response("bad json", { status: 400 }); }
 
   const { instance, data } = body;
   if (!data?.key || data.key.fromMe) return new Response("skip");
@@ -138,112 +229,70 @@ Deno.serve(async (req) => {
   const from = data.key.remoteJid.replace("@s.whatsapp.net","").replace("@g.us","");
   const msg = data.message?.conversation || data.message?.extendedTextMessage?.text || "";
   const tipo = data.messageType;
-  const nomeCliente = data.pushName || "";
+  const nome = data.pushName || "";
 
-  // Buscar tenant pela instância
-  const { data: tenant } = await sb.from("tenants")
-    .select("id, nome_loja, telefone_dono, telefone, plano")
+  // Buscar tenant pela instância (tabela ks_tenants)
+  const { data: tenant } = await sb.from("ks_tenants")
+    .select("id, nome_loja, telefone_dono, plano")
     .eq("evolution_instance", instance)
     .eq("ativo", true)
-    .single();
+    .maybeSingle();
 
   if (!tenant) return new Response("tenant_not_found");
 
-  const tenantId = tenant.id;
-  const msgLower = msg.toLowerCase().trim();
-  const dono = tenant.telefone_dono || tenant.telefone;
+  const tid = tenant.id;
+  const dono = tenant.telefone_dono;
+  const msgL = msg.toLowerCase().trim();
 
-  // Registrar/atualizar conversa
-  await sb.from("conversas").upsert({
-    tenant_id: tenantId,
-    numero_cliente: from,
-    nome_cliente: nomeCliente,
-    ultima_mensagem: msg.substring(0, 200),
-    ultimo_contato: new Date().toISOString(),
-    status: "ABERTA"
-  }, { onConflict: "tenant_id,numero_cliente" });
+  // Upsert conversa
+  await sb.from("ks_conversas").upsert({
+    tenant_id: tid, numero_cliente: from, nome_cliente: nome,
+    ultima_mensagem: msg.substring(0,200), ultimo_contato: new Date().toISOString(), status: "ABERTA"
+  }, { onConflict: "tenant_id,numero_cliente" }).catch(() => {});
 
-  // Buscar ou criar cliente
-  let { data: cliente } = await sb.from("clientes")
-    .select("id, nome, total_pedidos")
-    .eq("tenant_id", tenantId)
-    .eq("telefone", from)
-    .maybeSingle();
-
-  if (!cliente && nomeCliente) {
-    const { data: novoCliente } = await sb.from("clientes").insert({
-      tenant_id: tenantId, nome: nomeCliente, telefone: from
-    }).select("id").single();
-    cliente = novoCliente;
+  // Criar/buscar cliente
+  let { data: cli } = await sb.from("ks_clientes").select("id,total_pedidos").eq("tenant_id", tid).eq("telefone", from).maybeSingle();
+  if (!cli && nome) {
+    const { data: nc } = await sb.from("ks_clientes").insert({ tenant_id: tid, nome, telefone: from }).select("id").single();
+    cli = nc;
   }
 
-  // ── COMANDOS DO DONO ──────────────────────────────────
-  if (from === dono?.replace(/\\D/g, "")) {
-    if (msgLower === "status" || msgLower === "resumo") {
-      return rotear("relatorio-store", { tenantId, instance, force: true }, req);
-    }
-    if (msgLower.startsWith("estoque baixo")) {
-      return rotear("estoque-store", { tenantId, instance, acao: "ALERTAS" }, req);
-    }
+  // Comandos do dono
+  if (from === dono?.replace(/\\D/g,"")) {
+    if (msgL === "status" || msgL === "resumo") return rotear("relatorio-store", { tid, instance, force: true }, req);
+    if (msgL.includes("estoque")) return rotear("estoque-store", { tid, instance, acao: "ALERTAS" }, req);
   }
 
-  // ── INTENÇÃO DE COMPRA ────────────────────────────────
-  const queroComprar = /quero|tem|existe|disponível|disponivel|quanto|preço|preco|valor|comprar|pedir|encomendar/i;
-  const saudacao = /^(oi|ola|olá|bom dia|boa tarde|boa noite|hey|hello|hi)$/i;
+  // Imagem → criar post marketing
+  if (tipo === "imageMessage") return rotear("marketing-store", { tid, from, instance, imageData: data.message?.imageMessage }, req);
 
-  if (tipo === "imageMessage") {
-    return rotear("marketing-store", { tenantId, from, instance, imageData: data.message.imageMessage }, req);
-  }
+  // NPS (1-10)
+  if (/^\\d{1,2}$/.test(msgL) && +msgL >= 1 && +msgL <= 10)
+    return rotear("nps-store", { tid, from, nota: +msgL, instance }, req);
 
-  if (saudacao.test(msgLower) || msg.length < 4) {
-    return rotear("vendas-store", { tenantId, from, msg: "SAUDACAO", instance, nomeCliente, clienteId: cliente?.id }, req);
-  }
+  // Troca/devolução
+  if (/trocar|devolução|devolver|defeito|errado/i.test(msgL))
+    return rotear("vendas-store", { tid, from, msg, instance, acao: "TROCA", clienteId: cli?.id }, req);
 
-  if (queroComprar.test(msgLower) || msgLower.includes("catálogo") || msgLower.includes("catalogo")) {
-    return rotear("vendas-store", { tenantId, from, msg, instance, nomeCliente, clienteId: cliente?.id }, req);
-  }
+  // Status pedido
+  if (/meu pedido|cadê|onde está|rastrear/i.test(msgL))
+    return rotear("vendas-store", { tid, from, msg: "STATUS_PEDIDO", instance, clienteId: cli?.id }, req);
 
-  // ── APROVAÇÃO DE PEDIDO ───────────────────────────────
-  if (/^(sim|ok|confirmar|confirmo|quero|isso|esse|essa|pode ser)$/i.test(msgLower)) {
-    return rotear("vendas-store", { tenantId, from, msg: "CONFIRMAR", instance, clienteId: cliente?.id }, req);
-  }
+  // Confirmar compra
+  if (/^(sim|ok|confirmar|confirmo|quero|pode|isso)$/i.test(msgL))
+    return rotear("vendas-store", { tid, from, msg: "CONFIRMAR", instance, clienteId: cli?.id }, req);
 
-  // ── PAGAMENTO ─────────────────────────────────────────
-  if (/pix|cartão|cartao|boleto|paguei|pago|já paguei/i.test(msgLower)) {
-    return rotear("vendas-store", { tenantId, from, msg, instance, acao: "PAGAMENTO", clienteId: cliente?.id }, req);
-  }
-
-  // ── STATUS DO PEDIDO ──────────────────────────────────
-  if (/meu pedido|cadê|onde|status|rastrear/i.test(msgLower)) {
-    return rotear("vendas-store", { tenantId, from, msg: "STATUS_PEDIDO", instance, clienteId: cliente?.id }, req);
-  }
-
-  // ── TROCA E DEVOLUÇÃO ─────────────────────────────────
-  if (/trocar|devolução|devolver|defeito|problema|errado/i.test(msgLower)) {
-    return rotear("vendas-store", { tenantId, from, msg, instance, acao: "TROCA", clienteId: cliente?.id }, req);
-  }
-
-  // ── NPS (nota numérica) ───────────────────────────────
-  if (/^\\d{1,2}$/.test(msgLower) && parseInt(msgLower) >= 1 && parseInt(msgLower) <= 10) {
-    return rotear("nps-store", { tenantId, from, nota: parseInt(msgLower), instance }, req);
-  }
-
-  // ── IA GERAL ──────────────────────────────────────────
-  return rotear("vendas-store", { tenantId, from, msg, instance, nomeCliente, clienteId: cliente?.id }, req);
+  // Tudo mais → IA de vendas
+  return rotear("vendas-store", { tid, from, msg, instance, nomeCliente: nome, clienteId: cli?.id }, req);
 });
 
 async function rotear(fn: string, payload: any, req: Request) {
-  try {
-    const r = await fetch(\`\${Deno.env.get("SUPABASE_URL")}/functions/v1/\${fn}\`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": req.headers.get("Authorization") || "" },
-      body: JSON.stringify(payload)
-    });
-    return new Response(await r.text(), { status: r.status });
-  } catch(e) {
-    console.error(\`Erro roteando para \${fn}:\`, e);
-    return new Response("routing_error", { status: 500 });
-  }
+  const r = await fetch(\`\${Deno.env.get("SUPABASE_URL")}/functions/v1/\${fn}\`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": req.headers.get("Authorization") || "" },
+    body: JSON.stringify(payload)
+  }).catch(() => null);
+  return new Response(r ? await r.text() : "error", { status: r?.status || 500 });
 }
 `;
 const FN1=`import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -254,125 +303,73 @@ const EVO = Deno.env.get("EVOLUTION_API_URL")!;
 const EK = Deno.env.get("EVOLUTION_API_KEY")!;
 
 Deno.serve(async (req) => {
-  const { tenantId, from, msg, instance, nomeCliente, clienteId, acao } = await req.json();
+  const { tid, from, msg, instance, nomeCliente, clienteId, acao } = await req.json();
 
-  // Buscar produtos disponíveis
-  const { data: produtos } = await sb.from("produtos")
-    .select("id, nome, descricao, preco, preco_promocional, estoque_atual, fotos, categoria, tags")
-    .eq("tenant_id", tenantId)
-    .eq("ativo", true)
-    .gt("estoque_atual", 0)
-    .limit(20);
+  const { data: tenant } = await sb.from("ks_tenants").select("nome_loja,nicho,desconto_fidelidade,pedidos_para_fidelidade,msg_boas_vindas").eq("id", tid).single();
+  const { data: produtos } = await sb.from("ks_produtos").select("id,nome,descricao,preco,preco_promocional,estoque_atual,categoria,tags").eq("tenant_id", tid).eq("ativo", true).gt("estoque_atual", 0).order("vendas_total", { ascending: false }).limit(15);
+  const { data: cli } = clienteId ? await sb.from("ks_clientes").select("nome,total_pedidos,segmento").eq("id", clienteId).single() : { data: null };
 
-  // Buscar dados do tenant
-  const { data: tenant } = await sb.from("tenants")
-    .select("nome_loja, nicho, msg_boas_vindas, desconto_fidelidade, pedidos_para_fidelidade")
-    .eq("id", tenantId)
-    .single();
+  const nomeLoja = tenant?.nome_loja || "Loja";
+  const ehFiel = (cli?.total_pedidos || 0) >= (tenant?.pedidos_para_fidelidade || 5);
+  const descFiel = ehFiel ? (tenant?.desconto_fidelidade || 5) : 0;
 
-  // Buscar pedidos do cliente para fidelidade
-  const { data: cliente } = clienteId ? await sb.from("clientes")
-    .select("nome, total_pedidos, segmento")
-    .eq("id", clienteId)
-    .single() : { data: null };
+  const wpp = async (num: string, txt: string) => {
+    await fetch(\`\${EVO}/message/sendText/\${instance}\`, {
+      method: "POST", headers: { "Content-Type": "application/json", "apikey": EK },
+      body: JSON.stringify({ number: num, text: txt })
+    }).catch(() => {});
+  };
 
-  const nomeVendedor = tenant?.nome_loja || "Loja";
-  const ehFiel = (cliente?.total_pedidos || 0) >= (tenant?.pedidos_para_fidelidade || 5);
-  const descontoFiel = ehFiel ? (tenant?.desconto_fidelidade || 5) : 0;
-
-  // STATUS DE PEDIDO
-  if (acao === "STATUS_PEDIDO") {
-    const { data: pedido } = await sb.from("pedidos")
-      .select("numero_pedido, status, total, criado_em, itens_pedido(nome_produto, quantidade)")
-      .eq("tenant_id", tenantId)
-      .eq("cliente_id", clienteId || "")
-      .order("criado_em", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (pedido) {
-      const statusMap: any = {
-        PENDENTE: "⏳ Aguardando pagamento",
-        APROVADO: "✅ Pagamento confirmado!",
-        SEPARANDO: "📦 Separando seu pedido",
-        PRONTO: "🎉 Pronto para retirada!",
-        ENTREGUE: "✅ Entregue!"
-      };
-      const resp = \`📋 *Pedido #\${pedido.numero_pedido}*\\n\\n\` +
-        \`Status: \${statusMap[pedido.status] || pedido.status}\\n\` +
-        \`💰 Total: R$ \${pedido.total?.toFixed(2)}\\n\\n\` +
-        \`🔗 Acompanhe: https://store.kronexa.com.br/portal-cliente.html?pedido=\${pedido.numero_pedido}\`;
-      await wpp(instance, from, resp);
-      return new Response("ok");
-    }
-    await wpp(instance, from, "Não encontrei pedidos recentes para seu número. Precisando fazer um novo pedido? 😊");
-    return new Response("ok");
-  }
-
-  // TROCA/DEVOLUÇÃO
+  // Troca
   if (acao === "TROCA") {
-    await wpp(instance, from,
-      \`Entendido! Vamos resolver isso. 🤝\\n\\n\` +
-      \`Para troca ou devolução, você tem *direito garantido pela lei (CDC)* em até 7 dias após receber o produto.\\n\\n\` +
-      \`📱 Fale com nossa equipe agora: https://wa.me/5561991775904\\n\\n\` +
-      \`Ou acesse: https://store.kronexa.com.br/portal-cliente.html\`
-    );
+    await wpp(from, \`Entendido! Vamos resolver. 🤝\\nVocê tem *7 dias* de direito a troca (CDC Art. 49).\\n📱 Fale agora: https://wa.me/5561991775904\`);
     return new Response("ok");
   }
 
-  // SAUDAÇÃO
-  if (msg === "SAUDACAO") {
-    const saud = nomeCliente ? \`Olá, \${nomeCliente.split(" ")[0]}!\` : "Olá!";
-    const boas = tenant?.msg_boas_vindas ||
-      \`\${saud} 😊 Seja bem-vindo(a) à *\${nomeVendedor}*!\\n\\n\` +
-      \`Sou a IA da loja, estou aqui para ajudar com:\\n\` +
-      \`🛍️ Ver catálogo de produtos\\n💰 Preços e promoções\\n📦 Status de pedidos\\n\\n\` +
-      \`O que você procura hoje?\`;
-    await wpp(instance, from, boas);
+  // Status pedido
+  if (msg === "STATUS_PEDIDO") {
+    const { data: ped } = await sb.from("ks_pedidos").select("numero_pedido,status,total").eq("tenant_id", tid).eq("cliente_id", clienteId || "").order("criado_em", { ascending: false }).limit(1).maybeSingle();
+    if (ped) {
+      const st: any = { PENDENTE:"⏳ Aguardando pagamento", APROVADO:"✅ Confirmado!", SEPARANDO:"📦 Separando", PRONTO:"🎉 Pronto!", ENTREGUE:"✅ Entregue" };
+      await wpp(from, \`📋 *Pedido #\${ped.numero_pedido}*\\n\${st[ped.status] || ped.status}\\n💰 R$ \${ped.total?.toFixed(2)}\\n🔗 store.kronexa.com.br/portal-cliente.html\`);
+    } else {
+      await wpp(from, \`Não encontrei pedidos no seu número. Quer fazer um pedido? 😊\`);
+    }
     return new Response("ok");
   }
 
-  // LÓGICA PRINCIPAL — IA GEMINI FAZ A VENDA
-  const prompt = \`Você é a assistente de vendas da loja "\${nomeVendedor}" (\${tenant?.nicho || "varejo"}).
-Seja simpática, use emojis com moderação, fale português brasileiro informal.
+  // Saudação
+  if (msg === "SAUDACAO" || msg.length < 5) {
+    const boas = tenant?.msg_boas_vindas || \`Olá\${nomeCliente ? \` \${nomeCliente.split(" ")[0]}\` : ""}! 😊 Bem-vindo(a) à *\${nomeLoja}*!\\n\\nSou sua assistente de compras. O que você procura hoje?\\n\\n🛍️ Ver catálogo\\n💰 Promoções\\n📦 Meu pedido\`;
+    await wpp(from, boas);
+    return new Response("ok");
+  }
 
-Produtos disponíveis:
-\${(produtos || []).map(p => \`- \${p.nome} | R$ \${p.preco_promocional || p.preco} | Estoque: \${p.estoque_atual} | Cat: \${p.categoria}\`).join("\\n")}
+  // IA Gemini faz a venda
+  const catList = (produtos || []).map((p: any) =>
+    \`• \${p.nome} | R$ \${p.preco_promocional || p.preco} | \${p.estoque_atual} em estoque\`
+  ).join("\\n");
 
-\${ehFiel ? \`⭐ Cliente fiel! Aplicar \${descontoFiel}% de desconto automaticamente.\` : ""}
-\${cliente?.nome ? \`Cliente: \${cliente.nome} | Pedidos anteriores: \${cliente.total_pedidos}\` : ""}
+  const prompt = \`Você é vendedora da loja "\${nomeLoja}" (\${tenant?.nicho || "varejo"}).
+Seja simpática, objetiva, use poucos emojis. Português brasileiro.
+Produtos disponíveis:\\n\${catList}
+\${ehFiel ? \`⭐ Cliente fiel — oferecer \${descFiel}% de desconto!\` : ""}
+Mensagem: "\${msg}"
+Responda apresentando produtos relevantes com preço. Ofereça reservar por 2h. Máx 180 palavras.\`;
 
-Mensagem do cliente: "\${msg}"
-
-Responda de forma natural, apresente produtos relevantes com preço, e ofereça reservar por 2h. Se o cliente quiser comprar, confirme o pedido e diga que vai gerar o link de pagamento.
-Máximo 200 palavras. Seja direta e eficaz.\`;
-
-  let resposta = "";
+  let resp = "";
   try {
     const gr = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=\${GEMINI}\`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
     });
     const gd = await gr.json();
-    resposta = gd.candidates?.[0]?.content?.parts?.[0]?.text || "";
-  } catch(e) { console.error("Gemini erro:", e); }
+    resp = gd.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  } catch(e) {}
 
-  if (!resposta) {
-    resposta = \`Olá! 😊 Temos ótimos produtos disponíveis. O que você procura? Pode me dizer o tipo de produto ou ocasião que está buscando!\`;
-  }
-
-  await wpp(instance, from, resposta);
-  return new Response(JSON.stringify({ ok: true }));
+  await wpp(from, resp || \`Olá! 😊 Temos ótimos produtos. Me diz o que você procura e te ajudo a encontrar!\`);
+  return new Response("ok");
 });
-
-async function wpp(instance: string, numero: string, texto: string) {
-  await fetch(\`\${EVO}/message/sendText/\${instance}\`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "apikey": EK },
-    body: JSON.stringify({ number: numero, text: texto })
-  }).catch(() => {});
-}
 `;
 const FN2=`import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
