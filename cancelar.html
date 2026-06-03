@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cancelar Assinatura — Kronexa Store</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#08081A;color:#F0F0FF;font-family:-apple-system,sans-serif;min-height:100vh}
+.hd{height:56px;background:#12122A;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 5%;gap:10px}
+.logo{font-size:15px;font-weight:900}.logo span{color:#6C3FE8}
+.back{font-size:13px;color:#9090b0;text-decoration:none;margin-left:auto}
+.page{max-width:560px;margin:0 auto;padding:40px 20px 80px}
+h1{font-size:24px;font-weight:900;margin-bottom:6px}
+.sub{font-size:14px;color:#9090b0;margin-bottom:32px;line-height:1.6}
+.steps{display:flex;gap:4px;margin-bottom:28px}
+.step-dot{flex:1;height:3px;border-radius:2px;background:#1a1a35;transition:background .3s}
+.step-dot.done{background:#6C3FE8}
+.panel{display:none}.panel.show{display:block}
+.card{background:#12122A;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:22px;margin-bottom:14px;transition:all .2s}
+.card h3{font-size:15px;font-weight:700;margin-bottom:6px}
+.card p{font-size:13px;color:#9090b0;line-height:1.6}
+.keep-btn{width:100%;padding:12px;background:#6C3FE8;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-top:12px;transition:all .2s}
+.keep-btn:hover{background:#5530c4}
+.cancel-link{display:block;text-align:center;font-size:13px;color:#505070;margin-top:16px;cursor:pointer;transition:color .2s}
+.cancel-link:hover{color:#f87171}
+.fi{width:100%;padding:11px;background:#1a1a35;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#F0F0FF;font-size:13px;outline:none;margin-bottom:12px;font-family:inherit}
+.fi:focus{border-color:#6C3FE8}
+textarea.fi{resize:none;min-height:80px}
+.btn-g{width:100%;padding:12px;background:#6C3FE8;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer}
+.btn-r{width:100%;padding:12px;background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px}
+.success{text-align:center;padding:20px}
+.s-icon{font-size:52px;margin-bottom:14px}
+.s-title{font-size:20px;font-weight:800;margin-bottom:8px}
+.s-sub{font-size:14px;color:#9090b0;line-height:1.7;margin-bottom:24px}
+.protocol{background:#1a1a35;border-radius:10px;padding:14px;font-family:monospace;font-size:14px;text-align:center;color:#00E5FF;margin-bottom:20px}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="logo">KRO<span>NEXA</span> <span style="font-size:11px;color:#00E5FF">Store</span></div>
+  <a href="/" class="back">← Voltar à loja</a>
+</header>
+<div class="page">
+  <h1>Cancelar assinatura</h1>
+  <p class="sub">Sentimos muito em vê-lo partir. Antes de confirmar, veja as alternativas — pode haver uma solução melhor para o que está enfrentando.</p>
+
+  <div class="steps">
+    <div class="step-dot done" id="s1"></div>
+    <div class="step-dot" id="s2"></div>
+    <div class="step-dot" id="s3"></div>
+    <div class="step-dot" id="s4"></div>
+  </div>
+
+  <!-- STEP 1: Motivo -->
+  <div class="panel show" id="p1">
+    <div style="font-size:14px;font-weight:700;margin-bottom:14px">Qual o motivo do cancelamento?</div>
+    <div class="card" onclick="setMotivo('preco',this)" style="cursor:pointer">
+      <h3>💰 Preço alto</h3>
+      <p>O valor da assinatura está pesado no momento</p>
+    </div>
+    <div class="card" onclick="setMotivo('tecnico',this)" style="cursor:pointer">
+      <h3>⚙️ Problema técnico</h3>
+      <p>Algo não está funcionando como esperado</p>
+    </div>
+    <div class="card" onclick="setMotivo('funcionalidade',this)" style="cursor:pointer">
+      <h3>🔍 Falta uma funcionalidade</h3>
+      <p>Preciso de algo que o Kronexa Store não oferece</p>
+    </div>
+    <div class="card" onclick="setMotivo('parar',this)" style="cursor:pointer">
+      <h3>🏪 Fechando a loja / pausa</h3>
+      <p>Vou pausar as atividades temporariamente</p>
+    </div>
+    <div class="card" onclick="setMotivo('outro',this)" style="cursor:pointer">
+      <h3>💬 Outro motivo</h3>
+      <p>Prefiro explicar com minhas palavras</p>
+    </div>
+  </div>
+
+  <!-- STEP 2: Retenção -->
+  <div class="panel" id="p2">
+    <div id="retencao-content"></div>
+    <div class="cancel-link" onclick="irStep(3)">Não, quero mesmo cancelar →</div>
+  </div>
+
+  <!-- STEP 3: Confirmar -->
+  <div class="panel" id="p3">
+    <div style="font-size:14px;font-weight:700;margin-bottom:14px">Confirmar cancelamento</div>
+    <div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.15);border-radius:12px;padding:16px;margin-bottom:16px;font-size:13px;color:#9090b0;line-height:1.7">
+      ⚠️ Ao cancelar: acesso encerrado ao fim do período. Dados mantidos por 15 dias. Exporte antes de cancelar.
+    </div>
+    <label style="font-size:12px;color:#9090b0;display:block;margin-bottom:5px">Email da conta</label>
+    <input type="email" class="fi" id="email-conf" placeholder="seu@email.com">
+    <label style="font-size:12px;color:#9090b0;display:block;margin-bottom:5px">Comentário final (opcional)</label>
+    <textarea class="fi" id="comentario" placeholder="Algo que possamos melhorar?"></textarea>
+    <button class="btn-r" onclick="confirmarCancelamento()">Confirmar cancelamento definitivo</button>
+    <button class="btn-g" style="margin-top:8px" onclick="irStep(1)">← Voltar</button>
+  </div>
+
+  <!-- STEP 4: Protocolo -->
+  <div class="panel" id="p4">
+    <div class="success">
+      <div class="s-icon">📋</div>
+      <div class="s-title">Cancelamento registrado</div>
+      <div class="s-sub">Seu cancelamento foi processado. O acesso continua ativo até o fim do período pago. Seus dados ficam disponíveis por 15 dias.</div>
+      <div class="protocol" id="protocolo-num"></div>
+      <div style="font-size:12px;color:#505070;margin-bottom:20px">Guarde este protocolo. Se mudar de ideia em até 7 dias após a cobrança, temos direito a reembolso integral (CDC Art. 49).</div>
+      <button onclick="window.open('https://wa.me/5561991775904?text=Protocolo+de+cancelamento','_blank')" style="padding:12px 24px;background:#6C3FE8;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;width:100%">📱 Confirmar via WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let motivoAtual = '';
+
+const retencoes = {
+  preco: {titulo:'💡 Temos uma solução para o custo', desc:'Podemos pausar sua assinatura por até 2 meses sem cancelar. Ou migrar para o plano Starter (R$ 247/mês) sem perder dados.', btn:'Quero pausar ou mudar de plano'},
+  tecnico: {titulo:'🛠️ Vamos resolver juntos!', desc:'Nossa equipe resolve 100% dos problemas técnicos em até 24h. Antes de cancelar, fale conosco agora pelo WhatsApp.', btn:'Falar com suporte agora'},
+  funcionalidade: {titulo:'💡 Pode ser que já tenhamos!', desc:'Muitas funcionalidades não são óbvias. Além disso, desenvolvemos novas features mensalmente com base no feedback dos clientes.', btn:'Ver funcionalidades e roadmap'},
+  parar: {titulo:'⏸️ Pause sem cancelar', desc:'Oferecemos pausa de 1 a 6 meses com 70% de desconto. Quando voltar, seus dados estarão intactos.', btn:'Quero pausar a conta'},
+  outro: {titulo:'💬 Pode nos contar?', desc:'Seu feedback é valioso. Nossa equipe quer entender o que aconteceu e tentar resolver antes do cancelamento.', btn:'Falar com fundador'},
+};
+
+function setMotivo(m, el) {
+  motivoAtual = m;
+  document.querySelectorAll('.card').forEach(c=>{c.style.borderColor='rgba(255,255,255,.07)';c.style.background='#12122A';});
+  el.style.borderColor='#6C3FE8'; el.style.background='rgba(108,63,232,.05)';
+  setTimeout(()=>irStep(2), 300);
+}
+
+function irStep(n) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));
+  document.getElementById('p'+n).classList.add('show');
+  for(let i=1;i<=4;i++) document.getElementById('s'+i).classList.toggle('done',i<=n);
+
+  if (n===2 && motivoAtual) {
+    const r = retencoes[motivoAtual];
+    document.getElementById('retencao-content').innerHTML = `
+      <div style="background:#12122A;border:1px solid rgba(108,63,232,.2);border-radius:14px;padding:22px;margin-bottom:14px">
+        <h3 style="font-size:16px;font-weight:800;margin-bottom:10px">${r.titulo}</h3>
+        <p style="font-size:14px;color:#9090b0;line-height:1.7;margin-bottom:16px">${r.desc}</p>
+        <button class="keep-btn" onclick="window.open('https://wa.me/5561991775904?text=Sobre+cancelamento+Kronexa+Store','_blank')">${r.btn}</button>
+      </div>`;
+  }
+}
+
+function confirmarCancelamento() {
+  const email = document.getElementById('email-conf').value.trim();
+  if (!email || !email.includes('@')) { alert('Informe seu email para confirmar o cancelamento'); return; }
+  const protocol = 'KS-' + Date.now().toString(36).toUpperCase() + '-CANCEL';
+  document.getElementById('protocolo-num').textContent = protocol;
+  irStep(4);
+}
+</script>
+</body></html>
