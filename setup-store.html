@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Setup Kronexa Store</title><meta name="robots" content="noindex">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#08081A;color:#F0F0FF;font-family:-apple-system,sans-serif;padding:24px;max-width:640px;margin:0 auto}
+h1{font-size:20px;font-weight:800;margin-bottom:4px}
+.sub{font-size:13px;color:#71717a;margin-bottom:20px}
+.info{background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.2);border-radius:10px;padding:12px 14px;font-size:12px;color:#67e8f9;margin-bottom:18px;line-height:1.6}
+.box{background:#12122A;border:1px solid #27272a;border-radius:12px;padding:16px;margin-bottom:10px}
+.box-title{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.num{width:22px;height:22px;border-radius:50%;background:rgba(108,63,232,.15);color:#6C3FE8;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#1c1c1f;border-radius:8px;margin-bottom:4px}
+.rn{flex:1;font-size:11px;font-weight:600}
+.b{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px}
+.bw{background:rgba(255,255,255,.06);color:#52525b}
+.br{background:rgba(245,158,11,.1);color:#fbbf24}
+.bo{background:rgba(34,197,94,.1);color:#22c55e}
+.be{background:rgba(239,68,68,.1);color:#f87171}
+.btn{width:100%;padding:12px;background:#6C3FE8;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px}
+.btn:disabled{opacity:.5}
+.bar{height:3px;background:#27272a;border-radius:2px;margin-top:8px;overflow:hidden}
+.fill{height:100%;background:#6C3FE8;width:0%;transition:width .4s}
+.log{background:#000;border:1px solid #1c1c1f;border-radius:6px;padding:10px;font-family:monospace;font-size:10px;max-height:120px;overflow-y:auto;white-space:pre-wrap;color:#555;display:none;margin-top:8px}
+.sql{background:#000;border:1px solid rgba(0,229,255,.15);border-radius:6px;padding:12px;font-family:monospace;font-size:10px;white-space:pre-wrap;color:#67e8f9;max-height:200px;overflow-y:auto;margin-top:8px}
+.ok{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:16px;text-align:center;display:none;margin-top:10px}
+</style>
+</head>
+<body>
+<h1>⚙️ Setup Kronexa Store</h1>
+<p class="sub">Instala as Edge Functions e configura o banco de dados.</p>
+
+<div class="info">
+  ℹ️ Esta página configura a instância <strong>Kronexa Store</strong> no Supabase.<br>
+  Necessário: um projeto Supabase separado do Mecani.AI.
+</div>
+
+<div class="box">
+  <div class="box-title"><div class="num">1</div>Edge Functions Kronexa Store (6 automações)</div>
+  <div class="item"><span>🎯</span><div class="rn">orchestrator-store — Roteador WhatsApp varejo</div><span class="b bw" id="b0">Aguardando</span></div>
+  <div class="item"><span>🛍️</span><div class="rn">vendas-store — IA de vendas com Gemini</div><span class="b bw" id="b1">Aguardando</span></div>
+  <div class="item"><span>📦</span><div class="rn">estoque-store — Alertas e movimentos</div><span class="b bw" id="b2">Aguardando</span></div>
+  <div class="item"><span>⭐</span><div class="rn">nps-store — NPS pós-venda automático</div><span class="b bw" id="b3">Aguardando</span></div>
+  <div class="item"><span>📊</span><div class="rn">relatorio-store — Relatório diário IA</div><span class="b bw" id="b4">Aguardando</span></div>
+  <div class="item"><span>📸</span><div class="rn">marketing-store — Posts e reengajamento</div><span class="b bw" id="b5">Aguardando</span></div>
+  <div class="bar"><div class="fill" id="bar"></div></div>
+  <div class="log" id="log"></div>
+  <div style="margin-top:10px">
+    <label style="font-size:11px;color:#71717a;display:block;margin-bottom:4px">Supabase Project ID (novo projeto Store):</label>
+    <input id="proj-id" placeholder="ex: abcdefghijklmnop" style="width:100%;padding:9px 12px;background:#1c1c1f;border:1px solid #333;border-radius:8px;color:#F0F0FF;font-size:13px;font-family:monospace;outline:none;margin-bottom:6px">
+    <label style="font-size:11px;color:#71717a;display:block;margin-bottom:4px">Supabase PAT Token (sbp_...):</label>
+    <input id="pat-tk" type="password" placeholder="sbp_..." style="width:100%;padding:9px 12px;background:#1c1c1f;border:1px solid #333;border-radius:8px;color:#F0F0FF;font-size:13px;font-family:monospace;outline:none">
+  </div>
+  <button class="btn" id="btn1" onclick="startDeploy()">🚀 Instalar Edge Functions</button>
+</div>
+
+<div class="box" id="step2" style="display:none">
+  <div class="box-title"><div class="num">2</div>SQL — Execute no novo projeto Supabase</div>
+  <p style="font-size:12px;color:#71717a;margin-bottom:8px">Copie e execute em: supabase.com/dashboard → seu projeto Store → SQL Editor</p>
+  <a id="sql-link" href="#" target="_blank" style="display:inline-block;padding:7px 14px;background:#6C3FE8;color:#fff;border-radius:7px;font-size:12px;font-weight:700;margin-bottom:8px">Abrir SQL Editor →</a>
+  <button onclick="copiarSQL()" style="padding:7px 14px;background:transparent;border:1px solid #333;color:#9090b0;border-radius:7px;font-size:12px;cursor:pointer;margin-left:6px">📋 Copiar SQL</button>
+  <div class="sql" id="sql-content">-- Colar conteúdo do arquivo BANCO_DE_DADOS.sql
+-- Disponível em: store.kronexa.com.br/BANCO_DE_DADOS.sql</div>
+</div>
+
+<div class="ok" id="ok">
+  <div style="font-size:28px;margin-bottom:8px">🎉</div>
+  <div style="font-size:16px;font-weight:800;margin-bottom:4px">Kronexa Store configurado!</div>
+  <div style="font-size:12px;color:#a1a1aa">Execute o SQL e conecte o WhatsApp para começar a vender.</div>
+</div>
+
+<script>
+const FNS = [
+  ['orchestrator-store', FN0],
+  ['vendas-store',       FN1],
+  ['estoque-store',      FN2],
+  ['nps-store',          FN3],
+  ['relatorio-store',    FN4],
+  ['marketing-store',    FN5],
+];
+function lg(m){const e=document.getElementById('log');e.style.display='block';e.textContent+=new Date().toLocaleTimeString('pt-BR')+' '+m+'\n';e.scrollTop=9e9;}
+function st(i,t,c){const e=document.getElementById('b'+i);if(e){e.textContent=t;e.className='b b'+c;}}
+function prog(n){document.getElementById('fill' in document?'fill':'bar').style.width=(n/FNS.length*100)+'%';document.getElementById('bar').firstChild && (document.getElementById('bar').firstChild.style.width=(n/FNS.length*100)+'%');document.getElementById('bar').innerHTML='<div class="fill" style="width:'+(n/FNS.length*100)+'%"></div>';}
+
+async function dep(i,slug,code,tk,proj){
+  st(i,'...','br');lg(slug);
+  const API='https://api.supabase.com/v1/projects/'+proj+'/functions';
+  const h={'Authorization':'Bearer '+tk,'Content-Type':'application/json'};
+  try{
+    let r=await fetch(API+'/'+slug,{method:'PATCH',headers:h,body:JSON.stringify({body:code,verify_jwt:false})});
+    if(r.ok){st(i,'✅','bo');lg('✅ '+slug);return true;}
+    r=await fetch(API,{method:'POST',headers:h,body:JSON.stringify({slug,name:slug,body:code,verify_jwt:false})});
+    if(r.ok||r.status===201||r.status===409){st(i,'✅','bo');lg('✅ '+slug);return true;}
+    const e=await r.text();st(i,'ERR','be');lg('❌ '+e.substring(0,60));return false;
+  }catch(e){st(i,'ERR','be');lg('ERR:'+e.message);return false;}
+}
+
+async function startDeploy(){
+  const proj=document.getElementById('proj-id').value.trim();
+  const tk=document.getElementById('pat-tk').value.trim();
+  if(!proj){alert('Informe o Project ID do novo projeto Supabase');return;}
+  if(!tk||!tk.startsWith('sbp_')){alert('Informe o token PAT (sbp_...)');return;}
+  document.getElementById('btn1').disabled=true;
+  document.getElementById('sql-link').href='https://supabase.com/dashboard/project/'+proj+'/sql/new';
+  let ok=0;
+  for(let i=0;i<FNS.length;i++){
+    if(await dep(i,FNS[i][0],FNS[i][1],tk,proj))ok++;
+    prog(i+1);
+    await new Promise(r=>setTimeout(r,400));
+  }
+  document.getElementById('step2').style.display='block';
+  if(ok>=FNS.length-1)document.getElementById('ok').style.display='block';
+}
+
+function copiarSQL(){
+  fetch('/BANCO_DE_DADOS.sql').then(r=>r.text()).then(t=>{
+    navigator.clipboard.writeText(t).then(()=>alert('SQL copiado!'));
+  }).catch(()=>alert('Abra manualmente: store.kronexa.com.br/BANCO_DE_DADOS.sql'));
+}
+</script>
+<script>
+const FN0=`import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+const EVO = Deno.env.get("EVOLUTION_API_URL")!;
+const EK = Deno.env.get("EVOLUTION_API_KEY")!;
+
+Deno.serve(async (req) => {
+  if (req.method !== "POST") return new Response("ok");
+  let body: any;
+  try { body = await req.json(); } catch { return new Response("invalid json", { status: 400 }); }
+
+  const { instance, data } = body;
+  if (!data?.key || data.key.fromMe) return new Response("skip");
+
+  const from = data.key.remoteJid.replace("@s.whatsapp.net","").replace("@g.us","");
+  const msg = data.message?.conversation || data.message?.extendedTextMessage?.text || "";
+  const tipo = data.messageType;
+  const nomeCliente = data.pushName || "";
+
+  // Buscar tenant pela instância
+  const { data: tenant } = await sb.from("tenants")
+    .select("id, nome_loja, telefone_dono, telefone, plano")
+    .eq("evolution_instance", instance)
+    .eq("ativo", true)
+    .single();
+
+  if (!tenant) return new Response("tenant_not_found");
+
+  const tenantId = tenant.id;
+  const msgLower = msg.toLowerCase().trim();
+  const dono = tenant.telefone_dono || tenant.telefone;
+
+  // Registrar/atualizar conversa
+  await sb.from("conversas").upsert({
+    tenant_id: tenantId,
+    numero_cliente: from,
+    nome_cliente: nomeCliente,
+    ultima_mensagem: msg.substring(0, 200),
+    ultimo_contato: new Date().toISOString(),
+    status: "ABERTA"
+  }, { onConflict: "tenant_id,numero_cliente" });
+
+  // Buscar ou criar cliente
+  let { data: cliente } = await sb.from("clientes")
+    .select("id, nome, total_pedidos")
+    .eq("tenant_id", tenantId)
+    .eq("telefone", from)
+    .maybeSingle();
+
+  if (!cliente && nomeCliente) {
+    const { data: novoCliente } = await sb.from("clientes").insert({
+      tenant_id: tenantId, nome: nomeCliente, telefone: from
+    }).select("id").single();
+    cliente = novoCliente;
+  }
+
+  // ── COMANDOS DO DONO ──────────────────────────────────
+  if (from === dono?.replace(/\\D/g, "")) {
+    if (msgLower === "status" || msgLower === "resumo") {
+      return rotear("relatorio-store", { tenantId, instance, force: true }, req);
+    }
+    if (msgLower.startsWith("estoque baixo")) {
+      return rotear("estoque-store", { tenantId, instance, acao: "ALERTAS" }, req);
+    }
+  }
+
+  // ── INTENÇÃO DE COMPRA ────────────────────────────────
+  const queroComprar = /quero|tem|existe|disponível|disponivel|quanto|preço|preco|valor|comprar|pedir|encomendar/i;
+  const saudacao = /^(oi|ola|olá|bom dia|boa tarde|boa noite|hey|hello|hi)$/i;
+
+  if (tipo === "imageMessage") {
+    return rotear("marketing-store", { tenantId, from, instance, imageData: data.message.imageMessage }, req);
+  }
+
+  if (saudacao.test(msgLower) || msg.length < 4) {
+    return rotear("vendas-store", { tenantId, from, msg: "SAUDACAO", instance, nomeCliente, clienteId: cliente?.id }, req);
+  }
+
+  if (queroComprar.test(msgLower) || msgLower.includes("catálogo") || msgLower.includes("catalogo")) {
+    return rotear("vendas-store", { tenantId, from, msg, instance, nomeCliente, clienteId: cliente?.id }, req);
+  }
+
+  // ── APROVAÇÃO DE PEDIDO ───────────────────────────────
+  if (/^(sim|ok|confirmar|confirmo|quero|isso|esse|essa|pode ser)$/i.test(msgLower)) {
+    return rotear("vendas-store", { tenantId, from, msg: "CONFIRMAR", instance, clienteId: cliente?.id }, req);
+  }
+
+  // ── PAGAMENTO ─────────────────────────────────────────
+  if (/pix|cartão|cartao|boleto|paguei|pago|já paguei/i.test(msgLower)) {
+    return rotear("vendas-store", { tenantId, from, msg, instance, acao: "PAGAMENTO", clienteId: cliente?.id }, req);
+  }
+
+  // ── STATUS DO PEDIDO ──────────────────────────────────
+  if (/meu pedido|cadê|onde|status|rastrear/i.test(msgLower)) {
+    return rotear("vendas-store", { tenantId, from, msg: "STATUS_PEDIDO", instance, clienteId: cliente?.id }, req);
+  }
+
+  // ── TROCA E DEVOLUÇÃO ─────────────────────────────────
+  if (/trocar|devolução|devolver|defeito|problema|errado/i.test(msgLower)) {
+    return rotear("vendas-store", { tenantId, from, msg, instance, acao: "TROCA", clienteId: cliente?.id }, req);
+  }
+
+  // ── NPS (nota numérica) ───────────────────────────────
+  if (/^\\d{1,2}$/.test(msgLower) && parseInt(msgLower) >= 1 && parseInt(msgLower) <= 10) {
+    return rotear("nps-store", { tenantId, from, nota: parseInt(msgLower), instance }, req);
+  }
+
+  // ── IA GERAL ──────────────────────────────────────────
+  return rotear("vendas-store", { tenantId, from, msg, instance, nomeCliente, clienteId: cliente?.id }, req);
+});
+
+async function rotear(fn: string, payload: any, req: Request) {
+  try {
+    const r = await fetch(\`\${Deno.env.get("SUPABASE_URL")}/functions/v1/\${fn}\`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": req.headers.get("Authorization") || "" },
+      body: JSON.stringify(payload)
+    });
+    return new Response(await r.text(), { status: r.status });
+  } catch(e) {
+    console.error(\`Erro roteando para \${fn}:\`, e);
+    return new Response("routing_error", { status: 500 });
+  }
+}
+`;
+const FN1=`import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+const GEMINI = Deno.env.get("GEMINI_API_KEY")!;
+const EVO = Deno.env.get("EVOLUTION_API_URL")!;
+const EK = Deno.env.get("EVOLUTION_API_KEY")!;
+
+Deno.serve(async (req) => {
+  const { tenantId, from, msg, instance, nomeCliente, clienteId, acao } = await req.json();
+
+  // Buscar produtos disponíveis
+  const { data: produtos } = await sb.from("produtos")
+    .select("id, nome, descricao, preco, preco_promocional, estoque_atual, fotos, categoria, tags")
+    .eq("tenant_id", tenantId)
+    .eq("ativo", true)
+    .gt("estoque_atual", 0)
+    .limit(20);
+
+  // Buscar dados do tenant
+  const { data: tenant } = await sb.from("tenants")
+    .select("nome_loja, nicho, msg_boas_vindas, desconto_fidelidade, pedidos_para_fidelidade")
+    .eq("id", tenantId)
+    .single();
+
+  // Buscar pedidos do cliente para fidelidade
+  const { data: cliente } = clienteId ? await sb.from("clientes")
+    .select("nome, total_pedidos, segmento")
+    .eq("id", clienteId)
+    .single() : { data: null };
+
+  const nomeVendedor = tenant?.nome_loja || "Loja";
+  const ehFiel = (cliente?.total_pedidos || 0) >= (tenant?.pedidos_para_fidelidade || 5);
+  const descontoFiel = ehFiel ? (tenant?.desconto_fidelidade || 5) : 0;
+
+  // STATUS DE PEDIDO
+  if (acao === "STATUS_PEDIDO") {
+    const { data: pedido } = await sb.from("pedidos")
+      .select("numero_pedido, status, total, criado_em, itens_pedido(nome_produto, quantidade)")
+      .eq("tenant_id", tenantId)
+      .eq("cliente_id", clienteId || "")
+      .order("criado_em", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (pedido) {
+      const statusMap: any = {
+        PENDENTE: "⏳ Aguardando pagamento",
+        APROVADO: "✅ Pagamento confirmado!",
+        SEPARANDO: "📦 Separando seu pedido",
+        PRONTO: "🎉 Pronto para retirada!",
+        ENTREGUE: "✅ Entregue!"
+      };
+      const resp = \`📋 *Pedido #\${pedido.numero_pedido}*\\n\\n\` +
+        \`Status: \${statusMap[pedido.status] || pedido.status}\\n\` +
+        \`💰 Total: R$ \${pedido.total?.toFixed(2)}\\n\\n\` +
+        \`🔗 Acompanhe: https://store.kronexa.com.br/portal-cliente.html?pedido=\${pedido.numero_pedido}\`;
+      await wpp(instance, from, resp);
+      return new Response("ok");
+    }
+    await wpp(instance, from, "Não encontrei pedidos recentes para seu número. Precisando fazer um novo pedido? 😊");
+    return new Response("ok");
+  }
+
+  // TROCA/DEVOLUÇÃO
+  if (acao === "TROCA") {
+    await wpp(instance, from,
+      \`Entendido! Vamos resolver isso. 🤝\\n\\n\` +
+      \`Para troca ou devolução, você tem *direito garantido pela lei (CDC)* em até 7 dias após receber o produto.\\n\\n\` +
+      \`📱 Fale com nossa equipe agora: https://wa.me/5561991775904\\n\\n\` +
+      \`Ou acesse: https://store.kronexa.com.br/portal-cliente.html\`
+    );
+    return new Response("ok");
+  }
+
+  // SAUDAÇÃO
+  if (msg === "SAUDACAO") {
+    const saud = nomeCliente ? \`Olá, \${nomeCliente.split(" ")[0]}!\` : "Olá!";
+    const boas = tenant?.msg_boas_vindas ||
+      \`\${saud} 😊 Seja bem-vindo(a) à *\${nomeVendedor}*!\\n\\n\` +
+      \`Sou a IA da loja, estou aqui para ajudar com:\\n\` +
+      \`🛍️ Ver catálogo de produtos\\n💰 Preços e promoções\\n📦 Status de pedidos\\n\\n\` +
+      \`O que você procura hoje?\`;
+    await wpp(instance, from, boas);
+    return new Response("ok");
+  }
+
+  // LÓGICA PRINCIPAL — IA GEMINI FAZ A VENDA
+  const prompt = \`Você é a assistente de vendas da loja "\${nomeVendedor}" (\${tenant?.nicho || "varejo"}).
+Seja simpática, use emojis com moderação, fale português brasileiro informal.
+
+Produtos disponíveis:
+\${(produtos || []).map(p => \`- \${p.nome} | R$ \${p.preco_promocional || p.preco} | Estoque: \${p.estoque_atual} | Cat: \${p.categoria}\`).join("\\n")}
+
+\${ehFiel ? \`⭐ Cliente fiel! Aplicar \${descontoFiel}% de desconto automaticamente.\` : ""}
+\${cliente?.nome ? \`Cliente: \${cliente.nome} | Pedidos anteriores: \${cliente.total_pedidos}\` : ""}
+
+Mensagem do cliente: "\${msg}"
+
+Responda de forma natural, apresente produtos relevantes com preço, e ofereça reservar por 2h. Se o cliente quiser comprar, confirme o pedido e diga que vai gerar o link de pagamento.
+Máximo 200 palavras. Seja direta e eficaz.\`;
+
+  let resposta = "";
+  try {
+    const gr = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=\${GEMINI}\`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const gd = await gr.json();
+    resposta = gd.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  } catch(e) { console.error("Gemini erro:", e); }
+
+  if (!resposta) {
+    resposta = \`Olá! 😊 Temos ótimos produtos disponíveis. O que você procura? Pode me dizer o tipo de produto ou ocasião que está buscando!\`;
+  }
+
+  await wpp(instance, from, resposta);
+  return new Response(JSON.stringify({ ok: true }));
+});
+
+async function wpp(instance: string, numero: string, texto: string) {
+  await fetch(\`\${EVO}/message/sendText/\${instance}\`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "apikey": EK },
+    body: JSON.stringify({ number: numero, text: texto })
+  }).catch(() => {});
+}
+`;
+const FN2=`import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+const EVO = Deno.env.get("EVOLUTION_API_URL")!;
+const EK = Deno.env.get("EVOLUTION_API_KEY")!;
+
+Deno.serve(async (req) => {
+  const { tenantId, instance, acao, produtoId, quantidade, tipo } = await req.json();
+
+  // Verificar alertas de estoque baixo
+  if (acao === "ALERTAS" || !acao) {
+    const { data: baixos } = await sb.from("produtos")
+      .select("id, nome, estoque_atual, estoque_minimo, categoria")
+      .eq("tenant_id", tenantId)
+      .eq("ativo", true)
+      .filter("estoque_atual", "lte", sb.raw ? "estoque_minimo" : "estoque_minimo");
+
+    // Buscar dono
+    const { data: tenant } = await sb.from("tenants")
+      .select("telefone_dono, telefone, evolution_instance")
+      .eq("id", tenantId).single();
+
+    const numDono = tenant?.telefone_dono || tenant?.telefone;
+    const inst = tenant?.evolution_instance || instance;
+
+    if (baixos && baixos.length > 0) {
+      const msg = \`⚠️ *Alerta de Estoque — Kronexa Store*\\n\\n\` +
+        baixos.map((p: any) => \`• \${p.nome}: *\${p.estoque_atual} unidades* (mínimo: \${p.estoque_minimo})\`).join("\\n") +
+        \`\\n\\n📦 Repor agora: store.kronexa.com.br/portal-estoque.html\`;
+
+      if (numDono) {
+        await fetch(\`\${EVO}/message/sendText/\${inst}\`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "apikey": EK },
+          body: JSON.stringify({ number: \`55\${numDono.replace(/\\D/g,"")}\`, text: msg })
+        }).catch(() => {});
+      }
+    }
+
+    return new Response(JSON.stringify({ alertas: baixos?.length || 0 }));
+  }
+
+  // Registrar movimento de estoque
+  if (acao === "MOVIMENTO" && produtoId) {
+    const { data: produto } = await sb.from("produtos")
+      .select("estoque_atual").eq("id", produtoId).single();
+
+    const estoqueAntes = produto?.estoque_atual || 0;
+    const estoqueDepois = tipo === "ENTRADA"
+      ? estoqueAntes + (quantidade || 1)
+      : Math.max(0, estoqueAntes - (quantidade || 1));
+
+    await sb.from("produtos").update({ estoque_atual: estoqueDepois, atualizado_em: new Date().toISOString() }).eq("id", produtoId);
+    await sb.from("estoque_movimentos").insert({
+      tenant_id: tenantId, produto_id: produtoId, tipo,
+      quantidade: quantidade || 1, estoque_antes: estoqueAntes, estoque_depois: estoqueDepois
+    });
+
+    // Verificar se ficou abaixo do mínimo
+    if (tipo === "SAIDA" && estoqueDepois <= (await sb.from("produtos").select("estoque_minimo").eq("id", produtoId).single())?.data?.estoque_minimo) {
+      await fetch(\`\${Deno.env.get("SUPABASE_URL")}/functions/v1/estoque-store\`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": req.headers.get("Authorization") || "" },
+        body: JSON.stringify({ tenantId, instance, acao: "ALERTAS" })
+      }).catch(() => {});
+    }
+
+    return new Response(JSON.stringify({ ok: true, estoque_atual: estoqueDepois }));
+  }
+
+  return new Response("ok");
+});
+`;
+const FN3=`import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+const EVO = Deno.env.get("EVOLUTION_API_URL")!;
+const EK = Deno.env.get("EVOLUTION_API_KEY")!;
+
+Deno.serve(async (req) => {
+  const { tenantId, from, nota, instance } = await req.json();
+
+  // Atualizar NPS no banco
+  await sb.from("avaliacoes_nps")
+    .update({ nota, status: "RESPONDIDO", respondido_em: new Date().toISOString() })
+    .eq("tenant_id", tenantId).eq("status", "PENDENTE")
+    .order("criado_em", { ascending: false }).limit(1);
+
+  // Responder cliente
+  if (nota >= 9) {
+    await wpp(instance, from,
+      \`⭐ Que incrível! Obrigado pela nota *\${nota}*!\\n\\nVocê nos faz querer ser cada vez melhores. 🙏\\n\\nSe puder, deixa uma avaliação no Google — ajuda muito:\\n👉 https://g.page/r/review\`
+    );
+  } else if (nota <= 6) {
+    const { data: tenant } = await sb.from("tenants").select("telefone_dono,telefone,evolution_instance").eq("id", tenantId).single();
+    const dono = tenant?.telefone_dono || tenant?.telefone;
+    if (dono) {
+      await wpp(tenant?.evolution_instance || instance, \`55\${dono.replace(/\\D/g,"")}\`,
+        \`⚠️ *Alerta NPS!*\\n\\nCliente \${from} deu nota *\${nota}/10*.\\n\\nEntre em contato rapidamente para reverter a situação! 📱\`
+      );
+    }
+    await wpp(instance, from,
+      \`Obrigado pelo feedback, nota *\${nota}*. 🙏\\n\\nVamos melhorar! Se quiser nos contar o que aconteceu, pode responder aqui. Sua opinião é muito importante para nós.\`
+    );
+  } else {
+    await wpp(instance, from, \`Obrigado pela avaliação! Nota *\${nota}* recebida. 😊 Continuamos trabalhando para melhorar sempre!\`);
+  }
+
+  return new Response(JSON.stringify({ nota, ok: true }));
+});
+
+async function wpp(instance: string, numero: string, texto: string) {
+  await fetch(\`\${EVO}/message/sendText/\${instance}\`, {
+    method: "POST", headers: { "Content-Type": "application/json", "apikey": EK },
+    body: JSON.stringify({ number: numero, text: texto })
+  }).catch(() => {});
+}
+`;
+const FN4=`import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+const GEMINI = Deno.env.get("GEMINI_API_KEY")!;
+const EVO = Deno.env.get("EVOLUTION_API_URL")!;
+const EK = Deno.env.get("EVOLUTION_API_KEY")!;
+
+Deno.serve(async (req) => {
+  const { tenantId, instance, force } = await req.json().catch(() => ({}));
+
+  const query = sb.from("tenants").select("id, nome_loja, telefone_dono, telefone, plano, evolution_instance").eq("ativo", true);
+  if (tenantId) query.eq("id", tenantId);
+  const { data: tenants } = await query;
+
+  for (const t of (tenants || [])) {
+    const hoje = new Date().toISOString().split("T")[0];
+    const semanaAtras = new Date(Date.now() - 7*24*3600*1000).toISOString();
+
+    // Dados de hoje
+    const { data: vendasHoje } = await sb.from("pedidos")
+      .select("total, status").eq("tenant_id", t.id)
+      .gte("criado_em", hoje + "T00:00:00")
+      .in("status", ["APROVADO","SEPARANDO","PRONTO","ENTREGUE"]);
+
+    const receitaHoje = vendasHoje?.reduce((s: number, p: any) => s + (p.total || 0), 0) || 0;
+    const pedidosHoje = vendasHoje?.length || 0;
+
+    // Dados da semana
+    const { data: vendasSemana } = await sb.from("pedidos")
+      .select("total").eq("tenant_id", t.id).gte("criado_em", semanaAtras)
+      .in("status", ["APROVADO","SEPARANDO","PRONTO","ENTREGUE"]);
+
+    const receitaSemana = vendasSemana?.reduce((s: number, p: any) => s + (p.total || 0), 0) || 0;
+
+    // Estoque crítico
+    const { count: estoquesBaixos } = await sb.from("produtos")
+      .select("*", { count: "exact", head: true })
+      .eq("tenant_id", t.id).eq("ativo", true).lt("estoque_atual", 3);
+
+    // NPS
+    const { data: npsData } = await sb.from("avaliacoes_nps")
+      .select("nota").eq("tenant_id", t.id).gte("criado_em", semanaAtras).eq("status", "RESPONDIDO");
+    const notaMedia = npsData?.length ? (npsData.reduce((s: number, n: any) => s + n.nota, 0) / npsData.length).toFixed(1) : "N/A";
+
+    // Novos clientes
+    const { count: novosClientes } = await sb.from("clientes")
+      .select("*", { count: "exact", head: true }).eq("tenant_id", t.id).gte("criado_em", semanaAtras);
+
+    // Insight IA
+    let insight = "";
+    try {
+      const prompt = \`Loja de varejo "\${t.nome_loja}". Semana: R$\${receitaSemana.toFixed(0)} em vendas, \${novosClientes || 0} novos clientes, NPS \${notaMedia}, \${estoquesBaixos || 0} produtos com estoque crítico. Dê 1 insight acionável de 1 linha.\`;
+      const gr = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=\${GEMINI}\`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      const gd = await gr.json();
+      insight = gd.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    } catch(e) {}
+
+    const msg = \`📊 *Relatório Diário — \${t.nome_loja}*\\n\\n\` +
+      \`📅 \${new Date().toLocaleDateString("pt-BR", { weekday:"long", day:"numeric", month:"long" })}\\n\\n\` +
+      \`💰 Receita hoje: *R$ \${receitaHoje.toFixed(2)}*\\n\` +
+      \`🛍️ Pedidos hoje: *\${pedidosHoje}*\\n\` +
+      \`📆 Receita semana: *R$ \${receitaSemana.toFixed(2)}*\\n\` +
+      \`👥 Novos clientes: *\${novosClientes || 0}*\\n\` +
+      \`⭐ NPS médio: *\${notaMedia}*\\n\` +
+      \`\${(estoquesBaixos || 0) > 0 ? \`⚠️ Estoque crítico: *\${estoquesBaixos} produtos*\\n\` : "✅ Estoque: saudável\\n"}\` +
+      \`\${insight ? \`\\n💡 *Insight:* \${insight}\\n\` : ""}\` +
+      \`\\n🔗 Dashboard: https://store.kronexa.com.br/portal-admin.html\`;
+
+    const numDono = t.telefone_dono || t.telefone;
+    const inst = t.evolution_instance || instance || "mecani-oficina-01";
+
+    if (numDono) {
+      await fetch(\`\${EVO}/message/sendText/\${inst}\`, {
+        method: "POST", headers: { "Content-Type": "application/json", "apikey": EK },
+        body: JSON.stringify({ number: \`55\${numDono.replace(/\\D/g,"")}\`, text: msg })
+      }).catch(() => {});
+    }
+  }
+
+  return new Response(JSON.stringify({ ok: true, tenants: tenants?.length || 0 }));
+});
+`;
+const FN5=`import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+const GEMINI = Deno.env.get("GEMINI_API_KEY")!;
+const EVO = Deno.env.get("EVOLUTION_API_URL")!;
+const EK = Deno.env.get("EVOLUTION_API_KEY")!;
+
+Deno.serve(async (req) => {
+  const { tenantId, from, instance, acao, produtoId, rede, tom, imageData } = await req.json();
+
+  // CRIAR POST COM IA
+  if (acao === "CRIAR_POST" || imageData) {
+    const { data: tenant } = await sb.from("tenants").select("nome_loja, nicho").eq("id", tenantId).single();
+    const { data: produto } = produtoId ? await sb.from("produtos").select("nome, descricao, preco, categoria").eq("id", produtoId).single() : { data: null };
+
+    const prompt = \`Você é especialista em marketing digital para lojas de varejo brasileiras.
+Crie um post para \${rede || "Instagram"} com tom \${tom || "engajante"}.
+Loja: \${tenant?.nome_loja} (\${tenant?.nicho || "varejo"})
+\${produto ? \`Produto: \${produto.nome} | R$ \${produto.preco} | \${produto.descricao || ""}\` : "Post geral da loja"}
+Responda APENAS em JSON: {"legenda":"texto com emojis e CTA","hashtags":["#tag1","#tag2","#tag3","#tag4","#tag5"]}\`;
+
+    let legenda = "", hashtags: string[] = [];
+    try {
+      const parts: any[] = [];
+      if (imageData) parts.push({ type: "image_url", image_url: { url: \`data:image/jpeg;base64,\${imageData}\` } });
+      parts.push({ type: "text", text: prompt });
+
+      const gr = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=\${GEMINI}\`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      const gd = await gr.json();
+      const raw = gd.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+      const parsed = JSON.parse(raw.match(/\\{[\\s\\S]*\\}/)?.[0] || "{}");
+      legenda = parsed.legenda || "";
+      hashtags = parsed.hashtags || [];
+    } catch(e) { console.error("Gemini erro marketing:", e); }
+
+    // Salvar no banco
+    const { data: post } = await sb.from("social_posts").insert({
+      tenant_id: tenantId, produto_id: produtoId || null,
+      plataforma: rede || "INSTAGRAM", legenda, hashtags,
+      status: "RASCUNHO"
+    }).select("id").single();
+
+    // Notificar dono via WhatsApp se veio de imagem
+    if (imageData && from) {
+      const resp = \`✅ *Post criado com IA!*\\n\\n*Legenda:*\\n\${legenda}\\n\\n*Hashtags:*\\n\${hashtags.join(" ")}\\n\\nCopie e publique no Instagram! 📸\\n\\n_Dica: agende pelo portal de marketing_\`;
+      await fetch(\`\${EVO}/message/sendText/\${instance}\`, {
+        method: "POST", headers: { "Content-Type": "application/json", "apikey": EK },
+        body: JSON.stringify({ number: from, text: resp })
+      }).catch(() => {});
+    }
+
+    return new Response(JSON.stringify({ post_id: post?.id, legenda, hashtags }));
+  }
+
+  // CAMPANHA DE REENGAJAMENTO
+  if (acao === "REENGAJAMENTO") {
+    const diasSemCompra = 30;
+    const limite = new Date(Date.now() - diasSemCompra * 24 * 3600 * 1000).toISOString();
+
+    const { data: inativos } = await sb.from("clientes")
+      .select("id, nome, telefone")
+      .eq("tenant_id", tenantId)
+      .lt("ultimo_pedido", limite)
+      .eq("ativo", true)
+      .limit(50);
+
+    const { data: tenant } = await sb.from("tenants").select("nome_loja, evolution_instance").eq("id", tenantId).single();
+    const inst = tenant?.evolution_instance || instance;
+
+    let enviados = 0;
+    for (const c of (inativos || [])) {
+      if (!c.telefone) continue;
+      const msg = \`Oi\${c.nome ? \` \${c.nome.split(" ")[0]}\` : ""}! 👋\\n\\nFaz um tempinho que não te vemos por aqui. Sentimos sua falta! 😊\\n\\nTemos novidades incríveis esperando por você na *\${tenant?.nome_loja}*.\\n\\n🏷️ Desconto especial de *10% OFF* para você voltar:\\nCupom: *VOLTEI10*\\n\\nVálido por 48h! 🕐\`;
+      await fetch(\`\${EVO}/message/sendText/\${inst}\`, {
+        method: "POST", headers: { "Content-Type": "application/json", "apikey": EK },
+        body: JSON.stringify({ number: \`55\${c.telefone.replace(/\\D/g,"")}\`, text: msg })
+      }).catch(() => {});
+      enviados++;
+      await new Promise(r => setTimeout(r, 1000)); // evitar spam
+    }
+
+    return new Response(JSON.stringify({ enviados, total: inativos?.length || 0 }));
+  }
+
+  return new Response("ok");
+});
+`;
+</script>
+</body>
+</html>
