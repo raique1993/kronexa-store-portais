@@ -1,42 +1,31 @@
 -- =====================================================
--- KRONEXA STORE — Schema Completo do Banco de Dados
--- Execute no Supabase SQL Editor (novo projeto)
+-- KRONEXA STORE — Migração no projeto Mecani.AI
+-- Execute em: supabase.com/dashboard/project/tcjynyfusqkqtdohnyzq/sql/new
+-- As tabelas usam RLS para isolamento por tenant_id
 -- =====================================================
 
--- TENANTS (lojas)
-CREATE TABLE IF NOT EXISTS tenants (
+-- Tipo de produto para a loja
+CREATE TABLE IF NOT EXISTS ks_tenants (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  mecani_tenant_id UUID, -- referência ao tenant do Mecani.AI (se for o mesmo dono)
   nome_loja TEXT NOT NULL,
-  cnpj TEXT,
-  telefone TEXT,
   telefone_dono TEXT,
   email TEXT,
-  endereco TEXT,
-  nicho TEXT, -- perfumaria, bijuteria, otica, moda, etc
-  logo_url TEXT,
-  plano TEXT DEFAULT 'TRIAL', -- STARTER, PRO, FRANQUIA
-  status TEXT DEFAULT 'TRIAL', -- TRIAL, ATIVO, SUSPENSO, CANCELADO
+  nicho TEXT DEFAULT 'varejo',
+  plano TEXT DEFAULT 'TRIAL',
+  status TEXT DEFAULT 'TRIAL',
   trial_fim TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
-  evolution_instance TEXT, -- instância Evolution API
-  telegram_bot_token TEXT,
-  cloudinary_cloud TEXT,
-  horario_abertura TIME DEFAULT '08:00',
-  horario_fechamento TIME DEFAULT '18:00',
-  dias_funcionamento TEXT[] DEFAULT ARRAY['seg','ter','qua','qui','sex'],
-  desconto_fidelidade INT DEFAULT 5, -- % desconto cliente fiel
-  pedidos_para_fidelidade INT DEFAULT 5, -- qtd pedidos para ser fiel
+  evolution_instance TEXT,
+  desconto_fidelidade INT DEFAULT 5,
+  pedidos_para_fidelidade INT DEFAULT 5,
   meta_vendas_mensal NUMERIC(10,2),
-  msg_boas_vindas TEXT,
-  msg_ausencia TEXT,
   ativo BOOLEAN DEFAULT true,
-  criado_em TIMESTAMPTZ DEFAULT NOW(),
-  atualizado_em TIMESTAMPTZ DEFAULT NOW()
+  criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- PRODUTOS
-CREATE TABLE IF NOT EXISTS produtos (
+CREATE TABLE IF NOT EXISTS ks_produtos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
   nome TEXT NOT NULL,
   descricao TEXT,
   categoria TEXT,
@@ -45,37 +34,27 @@ CREATE TABLE IF NOT EXISTS produtos (
   preco_promocional NUMERIC(10,2),
   estoque_atual INT DEFAULT 0,
   estoque_minimo INT DEFAULT 2,
-  estoque_maximo INT,
-  unidade TEXT DEFAULT 'un',
+  fotos TEXT[],
+  variações JSONB,
   codigo_barras TEXT,
   sku TEXT,
-  fotos TEXT[], -- URLs Cloudinary
-  variações JSONB, -- [{cor: 'Rosa', tamanho: 'P', estoque: 5}]
-  peso_g INT,
   ativo BOOLEAN DEFAULT true,
   destaque BOOLEAN DEFAULT false,
   tags TEXT[],
   vendas_total INT DEFAULT 0,
-  avaliacao_media NUMERIC(3,2) DEFAULT 0,
   criado_em TIMESTAMPTZ DEFAULT NOW(),
   atualizado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- CLIENTES
-CREATE TABLE IF NOT EXISTS clientes (
+CREATE TABLE IF NOT EXISTS ks_clientes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
   nome TEXT NOT NULL,
   telefone TEXT NOT NULL,
   email TEXT,
   data_nascimento DATE,
   endereco TEXT,
-  bairro TEXT,
-  cidade TEXT,
-  estado TEXT,
-  cep TEXT,
-  notas TEXT,
-  segmento TEXT DEFAULT 'NORMAL', -- NORMAL, VIP, FIEL, INATIVO
+  segmento TEXT DEFAULT 'NORMAL',
   total_pedidos INT DEFAULT 0,
   total_gasto NUMERIC(10,2) DEFAULT 0,
   ultimo_pedido TIMESTAMPTZ,
@@ -84,78 +63,65 @@ CREATE TABLE IF NOT EXISTS clientes (
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- PEDIDOS
-CREATE TABLE IF NOT EXISTS pedidos (
+CREATE TABLE IF NOT EXISTS ks_pedidos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  cliente_id UUID REFERENCES clientes(id),
-  numero_pedido INT,
-  status TEXT DEFAULT 'PENDENTE', -- PENDENTE, APROVADO, SEPARANDO, PRONTO, ENTREGUE, CANCELADO
-  canal TEXT DEFAULT 'WHATSAPP', -- WHATSAPP, TELEGRAM, SITE, PRESENCIAL
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
+  cliente_id UUID REFERENCES ks_clientes(id),
+  numero_pedido SERIAL,
+  status TEXT DEFAULT 'PENDENTE',
+  canal TEXT DEFAULT 'WHATSAPP',
   subtotal NUMERIC(10,2) DEFAULT 0,
   desconto NUMERIC(10,2) DEFAULT 0,
-  frete NUMERIC(10,2) DEFAULT 0,
   total NUMERIC(10,2) DEFAULT 0,
-  forma_pagamento TEXT, -- PIX, CARTAO, BOLETO, DINHEIRO
+  forma_pagamento TEXT,
   status_pagamento TEXT DEFAULT 'PENDENTE',
   link_pagamento TEXT,
-  pago_em TIMESTAMPTZ,
-  tipo_entrega TEXT DEFAULT 'RETIRADA', -- RETIRADA, DELIVERY, CORREIOS
-  endereco_entrega TEXT,
+  nome_cliente TEXT,
+  telefone_cliente TEXT,
   observacoes TEXT,
-  atendente_ia BOOLEAN DEFAULT true,
-  conversa_id TEXT,
   criado_em TIMESTAMPTZ DEFAULT NOW(),
   atualizado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ITENS DO PEDIDO
-CREATE TABLE IF NOT EXISTS itens_pedido (
+CREATE TABLE IF NOT EXISTS ks_itens_pedido (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  pedido_id UUID REFERENCES pedidos(id) ON DELETE CASCADE,
-  produto_id UUID REFERENCES produtos(id),
+  pedido_id UUID REFERENCES ks_pedidos(id) ON DELETE CASCADE,
+  produto_id UUID REFERENCES ks_produtos(id),
   nome_produto TEXT NOT NULL,
   variacao TEXT,
-  quantidade INT NOT NULL DEFAULT 1,
+  quantidade INT DEFAULT 1,
   preco_unitario NUMERIC(10,2) NOT NULL,
-  desconto_item NUMERIC(10,2) DEFAULT 0,
   subtotal NUMERIC(10,2) NOT NULL
 );
 
--- RESERVAS
-CREATE TABLE IF NOT EXISTS reservas (
+CREATE TABLE IF NOT EXISTS ks_reservas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  produto_id UUID REFERENCES produtos(id),
-  cliente_id UUID REFERENCES clientes(id),
-  variacao TEXT,
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
+  produto_id UUID REFERENCES ks_produtos(id),
+  cliente_id UUID REFERENCES ks_clientes(id),
   quantidade INT DEFAULT 1,
   expira_em TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '2 hours'),
-  status TEXT DEFAULT 'ATIVA', -- ATIVA, CONVERTIDA, EXPIRADA, CANCELADA
-  conversa_id TEXT,
+  status TEXT DEFAULT 'ATIVA',
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- MOVIMENTOS DE ESTOQUE
-CREATE TABLE IF NOT EXISTS estoque_movimentos (
+CREATE TABLE IF NOT EXISTS ks_estoque_movimentos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  produto_id UUID REFERENCES produtos(id),
-  tipo TEXT NOT NULL, -- ENTRADA, SAIDA, RESERVA, LIBERACAO, AJUSTE
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
+  produto_id UUID REFERENCES ks_produtos(id),
+  tipo TEXT NOT NULL,
   quantidade INT NOT NULL,
   estoque_antes INT,
   estoque_depois INT,
   motivo TEXT,
-  referencia_id UUID,
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- CAIXA
-CREATE TABLE IF NOT EXISTS caixa (
+CREATE TABLE IF NOT EXISTS ks_caixa (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  tipo TEXT NOT NULL, -- ENTRADA, SAIDA
-  categoria TEXT, -- VENDA, DEVOLUCAO, DESPESA, COMISSAO, etc
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
+  tipo TEXT NOT NULL,
+  categoria TEXT,
   valor NUMERIC(10,2) NOT NULL,
   descricao TEXT,
   referencia_id UUID,
@@ -163,111 +129,94 @@ CREATE TABLE IF NOT EXISTS caixa (
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- SOCIAL POSTS
-CREATE TABLE IF NOT EXISTS social_posts (
+CREATE TABLE IF NOT EXISTS ks_social_posts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  produto_id UUID REFERENCES produtos(id),
-  plataforma TEXT, -- INSTAGRAM, FACEBOOK, X, TODOS
-  titulo TEXT,
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
+  produto_id UUID REFERENCES ks_produtos(id),
+  plataforma TEXT,
   legenda TEXT,
   hashtags TEXT[],
   imagem_url TEXT,
-  status TEXT DEFAULT 'RASCUNHO', -- RASCUNHO, AGENDADO, PUBLICADO, ERRO
+  status TEXT DEFAULT 'RASCUNHO',
   agendado_para TIMESTAMPTZ,
-  publicado_em TIMESTAMPTZ,
-  instrucao_dono TEXT,
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- AVALIACOES NPS
-CREATE TABLE IF NOT EXISTS avaliacoes_nps (
+CREATE TABLE IF NOT EXISTS ks_avaliacoes_nps (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  pedido_id UUID REFERENCES pedidos(id),
-  cliente_id UUID REFERENCES clientes(id),
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
+  pedido_id UUID REFERENCES ks_pedidos(id),
+  cliente_id UUID REFERENCES ks_clientes(id),
   nota INT CHECK (nota BETWEEN 1 AND 10),
   comentario TEXT,
   status TEXT DEFAULT 'PENDENTE',
-  enviado_em TIMESTAMPTZ,
   respondido_em TIMESTAMPTZ,
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- CAMPANHAS MARKETING
-CREATE TABLE IF NOT EXISTS campanhas (
+CREATE TABLE IF NOT EXISTS ks_campanhas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
   nome TEXT NOT NULL,
-  tipo TEXT, -- REENGAJAMENTO, ANIVERSARIO, PROMOCAO, LANCAMENTO
-  canal TEXT, -- WHATSAPP, EMAIL, AMBOS
+  tipo TEXT,
+  canal TEXT,
   mensagem TEXT,
-  segmento TEXT, -- TODOS, VIP, FIEL, INATIVO
+  segmento TEXT DEFAULT 'TODOS',
   status TEXT DEFAULT 'RASCUNHO',
-  agendado_para TIMESTAMPTZ,
   enviado_para INT DEFAULT 0,
+  agendado_para TIMESTAMPTZ,
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- FORNECEDORES
-CREATE TABLE IF NOT EXISTS fornecedores (
+CREATE TABLE IF NOT EXISTS ks_conversas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  nome TEXT NOT NULL,
-  contato TEXT,
-  whatsapp TEXT,
-  email TEXT,
-  cnpj TEXT,
-  categoria TEXT,
-  ativo BOOLEAN DEFAULT true,
-  criado_em TIMESTAMPTZ DEFAULT NOW()
-);
-
--- CONVERSAS (histórico WhatsApp)
-CREATE TABLE IF NOT EXISTS conversas (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  cliente_id UUID REFERENCES clientes(id),
+  tenant_id UUID REFERENCES ks_tenants(id) ON DELETE CASCADE,
+  cliente_id UUID REFERENCES ks_clientes(id),
   canal TEXT DEFAULT 'WHATSAPP',
   numero_cliente TEXT NOT NULL,
   nome_cliente TEXT,
   ultima_mensagem TEXT,
   ultimo_contato TIMESTAMPTZ,
   status TEXT DEFAULT 'ABERTA',
-  contexto JSONB, -- estado da conversa para a IA
-  criado_em TIMESTAMPTZ DEFAULT NOW()
+  contexto JSONB,
+  criado_em TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(tenant_id, numero_cliente)
 );
 
--- MENSAGENS
-CREATE TABLE IF NOT EXISTS mensagens (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  conversa_id UUID REFERENCES conversas(id) ON DELETE CASCADE,
-  remetente TEXT NOT NULL, -- CLIENTE, IA, HUMANO
-  conteudo TEXT,
-  tipo TEXT DEFAULT 'TEXTO', -- TEXTO, IMAGEM, AUDIO, DOCUMENTO
-  midia_url TEXT,
-  criado_em TIMESTAMPTZ DEFAULT NOW()
-);
+-- Índices para performance
+CREATE INDEX IF NOT EXISTS idx_ks_produtos_tenant ON ks_produtos(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_ks_pedidos_tenant ON ks_pedidos(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_ks_clientes_tenant ON ks_clientes(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_ks_clientes_tel ON ks_clientes(telefone, tenant_id);
+CREATE INDEX IF NOT EXISTS idx_ks_conversas_num ON ks_conversas(numero_cliente, tenant_id);
 
--- INTEGRACOES
-CREATE TABLE IF NOT EXISTS integracoes (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  tipo TEXT NOT NULL, -- BLING, NUVEMSHOP, VTEX, SHOPIFY
-  config JSONB,
-  status TEXT DEFAULT 'INATIVO',
-  ultimo_sync TIMESTAMPTZ,
-  criado_em TIMESTAMPTZ DEFAULT NOW()
-);
+-- Tenant demo Kronexa Store
+INSERT INTO ks_tenants (
+  id, nome_loja, telefone_dono, email, nicho,
+  plano, status, evolution_instance, ativo
+) VALUES (
+  'b2c3d4e5-0001-0000-0000-000000000001',
+  'Kronexa Store Demo',
+  '61991775904',
+  'raique@kronexa.com.br',
+  'perfumaria',
+  'PRO',
+  'ATIVO',
+  'mecani-oficina-01',
+  true
+) ON CONFLICT (id) DO NOTHING;
 
--- ÍNDICES
-CREATE INDEX IF NOT EXISTS idx_produtos_tenant ON produtos(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_pedidos_tenant ON pedidos(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_clientes_tenant ON clientes(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_clientes_telefone ON clientes(telefone);
-CREATE INDEX IF NOT EXISTS idx_conversas_numero ON conversas(numero_cliente, tenant_id);
+-- Produtos demo
+INSERT INTO ks_produtos (tenant_id, nome, categoria, preco, preco_custo, estoque_atual, estoque_minimo, ativo, destaque, vendas_total) VALUES
+  ('b2c3d4e5-0001-0000-0000-000000000001', 'Chanel N°5 EDP 100ml', 'Perfumaria', 320.00, 180.00, 8, 3, true, true, 12),
+  ('b2c3d4e5-0001-0000-0000-000000000001', 'Dior Sauvage EDP 100ml', 'Perfumaria', 285.00, 160.00, 2, 3, true, true, 7),
+  ('b2c3d4e5-0001-0000-0000-000000000001', 'Pulseira Dourada Aro', 'Bijuteria', 45.00, 18.00, 15, 5, true, false, 9),
+  ('b2c3d4e5-0001-0000-0000-000000000001', 'Armação Gatinho Acetato', 'Ótica', 180.00, 60.00, 0, 2, true, false, 5),
+  ('b2c3d4e5-0001-0000-0000-000000000001', 'Miss Dior Blooming EDP', 'Perfumaria', 298.00, 165.00, 5, 3, true, true, 6)
+ON CONFLICT DO NOTHING;
 
--- VERIFICAÇÃO
-SELECT 'Kronexa Store DB OK' as status, COUNT(*) as tabelas
-FROM information_schema.tables 
-WHERE table_schema = 'public';
+-- Verificação final
+SELECT 'Kronexa Store DB OK' AS status;
+SELECT table_name FROM information_schema.tables 
+WHERE table_schema = 'public' AND table_name LIKE 'ks_%' 
+ORDER BY table_name;
