@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Configurações — Kronexa Store</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#6C3FE8;--c:#00E5FF;--bg:#08081A;--bg2:#12122A;--bg3:#1a1a35;--t1:#F0F0FF;--t2:#9090b0;--t3:#505070}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.hd{height:56px;background:var(--bg2);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 20px;gap:12px}
+.logo{font-size:15px;font-weight:900}.logo span{color:var(--p)}
+.tag{font-size:10px;font-weight:700;background:rgba(108,63,232,.2);color:var(--p);padding:2px 8px;border-radius:100px}
+.nav{display:flex;gap:6px;margin-left:auto}
+.nav a{padding:6px 12px;border-radius:7px;font-size:12px;color:var(--t2);text-decoration:none;transition:all .2s}
+.nav a:hover,.nav a.on{background:rgba(108,63,232,.15);color:var(--t1)}
+.c{max-width:800px;margin:0 auto;padding:32px 20px}
+.section{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.sec-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.sec-body{padding:20px}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.fi{width:100%;padding:10px 13px;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:var(--t1);font-size:13px;outline:none}
+.fi:focus{border-color:var(--p)}
+textarea.fi{resize:none;min-height:80px;line-height:1.5}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{padding:10px 20px;background:var(--p);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn:hover{background:#5530c4}
+.btn-o{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--t2)}.btn-o:hover{border-color:var(--p);color:var(--t1)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.toggle-row:last-child{border:none}
+.toggle-info{}
+.toggle-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.toggle-desc{font-size:12px;color:var(--t3)}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#27272a;border-radius:12px;cursor:pointer;transition:.3s}
+.slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+input:checked+.slider{background:var(--p)}
+input:checked+.slider::before{transform:translateX(20px)}
+.wpp-test{background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px;margin-top:12px}
+.wpp-status{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:10px}
+.dot{width:8px;height:8px;border-radius:50%;background:#505070}
+.dot.on{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.5)}
+.dot.off{background:#f87171}
+.horarios{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+.dia{text-align:center}
+.dia-label{font-size:10px;color:var(--t3);margin-bottom:4px}
+.dia-check{width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s;margin:0 auto}
+.dia-check.on{background:rgba(108,63,232,.2);border-color:var(--p);color:var(--p)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid rgba(108,63,232,.2);color:var(--t1);padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:999;display:none;white-space:nowrap}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="logo">KRO<span>NEXA</span></div>
+  <div class="tag">STORE · CONFIG</div>
+  <nav class="nav">
+    <a href="portal-admin.html">Dashboard</a>
+    <a href="portal-atendente.html">Atendimento</a>
+    <a href="portal-estoque.html">Estoque</a>
+    <a href="portal-financeiro.html">Financeiro</a>
+    <a href="portal-configuracoes.html" class="on">Configurações</a>
+  </nav>
+</header>
+
+<div class="c">
+  <h2 style="font-size:20px;font-weight:800;letter-spacing:-.5px;margin-bottom:20px">Configurações da Loja</h2>
+
+  <!-- DADOS DA LOJA -->
+  <div class="section">
+    <div class="sec-head">🏪 Dados da Loja</div>
+    <div class="sec-body">
+      <div class="fr2">
+        <div class="form-row"><label>Nome da loja</label><input class="fi" id="nome-loja" value="Kronexa Store Demo"></div>
+        <div class="form-row"><label>Nicho</label>
+          <select class="fi" id="nicho">
+            <option selected>Perfumaria</option><option>Bijuteria</option><option>Ótica</option>
+            <option>Moda</option><option>Beleza</option><option>Presentes</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr2">
+        <div class="form-row"><label>WhatsApp do dono</label><input class="fi" id="wpp-dono" value="61991775904"></div>
+        <div class="form-row"><label>Email</label><input class="fi" id="email-loja" value="raique@kronexa.com.br"></div>
+      </div>
+      <div class="form-row"><label>Mensagem de boas-vindas</label>
+        <textarea class="fi" id="msg-boas">Olá! 😊 Bem-vindo(a)! Sou a assistente da loja, estou aqui para ajudar. O que você procura hoje?</textarea>
+      </div>
+      <button class="btn" onclick="salvar('dados')">💾 Salvar dados</button>
+    </div>
+  </div>
+
+  <!-- WHATSAPP -->
+  <div class="section">
+    <div class="sec-head">📱 WhatsApp & IA</div>
+    <div class="sec-body">
+      <div class="wpp-test">
+        <div class="wpp-status"><div class="dot" id="wpp-dot"></div><span id="wpp-status-txt">Verificando conexão...</span></div>
+        <div class="fr2">
+          <div class="form-row" style="margin:0"><label>Instância Evolution</label><input class="fi" id="ev-instance" value="mecani-oficina-01"></div>
+          <div class="form-row" style="margin:0"><label>Número conectado</label><input class="fi" id="wpp-numero" placeholder="5561999999999"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" onclick="testarWpp()">📡 Testar conexão</button>
+          <a href="https://evolution-api-production-f8dd.up.railway.app/manager" target="_blank" class="btn btn-o">Abrir Evolution API →</a>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="toggle-row">
+          <div class="toggle-info"><div class="toggle-title">IA ativa 24h</div><div class="toggle-desc">IA responde automaticamente fora do horário comercial</div></div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><div class="toggle-title">Reserva automática</div><div class="toggle-desc">Produto reservado por 2h quando cliente demonstra interesse</div></div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><div class="toggle-title">NPS automático</div><div class="toggle-desc">Pesquisa de satisfação enviada 24h após a entrega</div></div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><div class="toggle-title">Relatório diário</div><div class="toggle-desc">Resumo enviado todo dia às 8h no WhatsApp do dono</div></div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HORÁRIOS -->
+  <div class="section">
+    <div class="sec-head">🕐 Horário de Funcionamento</div>
+    <div class="sec-body">
+      <div class="horarios">
+        <div class="dia"><div class="dia-label">Dom</div><div class="dia-check" onclick="toggleDia(this)">D</div></div>
+        <div class="dia"><div class="dia-label">Seg</div><div class="dia-check on" onclick="toggleDia(this)">S</div></div>
+        <div class="dia"><div class="dia-label">Ter</div><div class="dia-check on" onclick="toggleDia(this)">T</div></div>
+        <div class="dia"><div class="dia-label">Qua</div><div class="dia-check on" onclick="toggleDia(this)">Q</div></div>
+        <div class="dia"><div class="dia-label">Qui</div><div class="dia-check on" onclick="toggleDia(this)">Q</div></div>
+        <div class="dia"><div class="dia-label">Sex</div><div class="dia-check on" onclick="toggleDia(this)">S</div></div>
+        <div class="dia"><div class="dia-label">Sáb</div><div class="dia-check on" onclick="toggleDia(this)">S</div></div>
+      </div>
+      <div class="fr2" style="margin-top:14px">
+        <div class="form-row"><label>Abertura</label><input class="fi" type="time" value="08:00"></div>
+        <div class="form-row"><label>Fechamento</label><input class="fi" type="time" value="18:00"></div>
+      </div>
+      <div class="form-row"><label>% Desconto clientes fiéis</label><input class="fi" type="number" value="5" min="0" max="30" style="width:120px"></div>
+      <div class="form-row"><label>Pedidos para ser cliente fiel</label><input class="fi" type="number" value="5" min="1" max="20" style="width:120px"></div>
+      <button class="btn" onclick="salvar('horarios')">💾 Salvar configurações</button>
+    </div>
+  </div>
+
+  <!-- INTEGRACOES -->
+  <div class="section">
+    <div class="sec-head">🔗 Integrações</div>
+    <div class="sec-body">
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="toggle-title">Mercado Pago</div><div class="toggle-desc" id="mp-status">Configurar para receber pagamentos automáticos</div></div>
+        <a href="https://www.mercadopago.com.br/developers/pt/docs" target="_blank" style="font-size:12px;color:var(--p)">Configurar →</a>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="toggle-title">Bling</div><div class="toggle-desc">Importar catálogo e sincronizar estoque</div></div>
+        <a href="#" style="font-size:12px;color:var(--t3)">Em breve</a>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="toggle-title">Nuvemshop / Shopify</div><div class="toggle-desc">Sincronizar pedidos e produtos</div></div>
+        <a href="#" style="font-size:12px;color:var(--t3)">Em breve</a>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="toggle-title">Cloudinary</div><div class="toggle-desc">Armazenamento de fotos dos produtos</div></div>
+        <button class="btn btn-o" style="font-size:12px;padding:6px 12px" onclick="alert('Informe seu Cloudinary Cloud Name')">Configurar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANO -->
+  <div class="section">
+    <div class="sec-head">💎 Seu Plano</div>
+    <div class="sec-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+        <div><div style="font-size:15px;font-weight:700">Plano PRO</div><div style="font-size:12px;color:var(--t3)">Produtos ilimitados · WhatsApp + Telegram · Redes sociais</div></div>
+        <div style="text-align:right"><div style="font-size:18px;font-weight:900;color:var(--p)">R$ 497<span style="font-size:12px;font-weight:400;color:var(--t3)">/mês</span></div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <a href="checkout.html" class="btn">Mudar plano</a>
+        <a href="cancelar.html" class="btn btn-o">Cancelar</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toggleDia(el){el.classList.toggle('on');}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2500);}
+
+function salvar(tipo){
+  toast('✅ Configurações salvas!');
+  // TODO: salvar no Supabase via REST
+}
+
+async function testarWpp(){
+  const inst = document.getElementById('ev-instance').value;
+  const btn = event.target;
+  btn.textContent='⏳ Testando...';btn.disabled=true;
+  try{
+    const r = await fetch(`https://evolution-api-production-f8dd.up.railway.app/instance/connectionState/${inst}`,{
+      headers:{'apikey':'a6c76ff8be4630ac09151a15b1273f9a86ad10c466a68931eb24c40fea102365'}
+    });
+    const d = await r.json();
+    const state = d?.instance?.state || d?.state || 'unknown';
+    if(state==='open'){
+      document.getElementById('wpp-dot').className='dot on';
+      document.getElementById('wpp-status-txt').textContent='✅ WhatsApp conectado!';
+      toast('✅ WhatsApp conectado!');
+    } else {
+      document.getElementById('wpp-dot').className='dot off';
+      document.getElementById('wpp-status-txt').textContent='⚠️ Estado: '+state;
+      toast('⚠️ WhatsApp não conectado: '+state);
+    }
+  }catch(e){
+    document.getElementById('wpp-dot').className='dot off';
+    document.getElementById('wpp-status-txt').textContent='❌ Erro ao conectar';
+    toast('❌ Erro: '+e.message);
+  }
+  btn.textContent='📡 Testar conexão';btn.disabled=false;
+}
+
+// Auto-testar WhatsApp ao carregar
+testarWpp();
+</script>
+</body>
+</html>
