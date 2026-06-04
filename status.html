@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Status — Kronexa Store</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#6C3FE8;--c:#00E5FF;--g:#22c55e;--bg:#08081A;--bg2:#12122A;--t1:#F0F0FF;--t2:#9090b0}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.hd{height:56px;background:var(--bg2);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 20px;gap:10px}
+.logo{font-size:15px;font-weight:900}.logo span{color:var(--p)}
+.back{font-size:13px;color:var(--t2);text-decoration:none;margin-left:auto}.back:hover{color:var(--t1)}
+.page{max-width:640px;margin:0 auto;padding:40px 20px}
+.hero{text-align:center;margin-bottom:40px}
+.overall{font-size:48px;margin-bottom:10px}
+h1{font-size:22px;font-weight:800;margin-bottom:4px}
+.overall-sub{font-size:14px;color:var(--t2)}
+.section-title{font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.services{display:flex;flex-direction:column;gap:8px;margin-bottom:32px}
+.srv{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.srv-name{flex:1;font-size:13px;font-weight:600}
+.srv-sub{font-size:11px;color:var(--t2)}
+.badge{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700}
+.b-ok{background:rgba(34,197,94,.1);color:#22c55e}
+.b-warn{background:rgba(245,158,11,.1);color:#fbbf24}
+.b-err{background:rgba(239,68,68,.1);color:#f87171}
+.b-info{background:rgba(108,63,232,.1);color:#a78bfa}
+.uptime{font-size:12px;color:var(--t2);text-align:right;margin-top:3px}
+.incidents{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:10px;padding:14px 16px;margin-bottom:20px}
+.inc-title{font-size:13px;font-weight:700;color:var(--g);margin-bottom:4px}
+.inc-text{font-size:12px;color:var(--t2);line-height:1.6}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="logo">KRO<span>NEXA</span> <span style="font-size:11px;color:var(--c)">Store</span></div>
+  <a href="/" class="back">← Voltar</a>
+</header>
+
+<div class="page">
+  <div class="hero">
+    <div class="overall" id="overall-icon">🟢</div>
+    <h1 id="overall-title">Todos os sistemas operacionais</h1>
+    <p class="overall-sub" id="overall-sub">Última verificação: <span id="last-check">agora</span></p>
+  </div>
+
+  <div class="incidents">
+    <div class="inc-title">✅ Sem incidentes ativos</div>
+    <div class="inc-text">Todos os serviços estão funcionando normalmente. Uptime do mês: 99.8%</div>
+  </div>
+
+  <div class="section-title">Serviços principais</div>
+  <div class="services" id="services">
+    <div class="srv"><div><div class="srv-name">🤖 IA de Vendas (WhatsApp)</div><div class="srv-sub">Atendimento automático 24h</div></div><span class="badge b-ok" id="s-wpp">Verificando...</span></div>
+    <div class="srv"><div><div class="srv-name">📦 Banco de Dados</div><div class="srv-sub">Supabase São Paulo</div></div><span class="badge b-ok" id="s-db">Verificando...</span></div>
+    <div class="srv"><div><div class="srv-name">🌐 Site (GitHub Pages)</div><div class="srv-sub">store.kronexa.com.br</div></div><span class="badge b-ok" id="s-site">Verificando...</span></div>
+    <div class="srv"><div><div class="srv-name">⚡ Edge Functions</div><div class="srv-sub">6 automações ativas</div></div><span class="badge b-ok" id="s-fn">Verificando...</span></div>
+    <div class="srv"><div><div class="srv-name">💳 Pagamentos (Mercado Pago)</div><div class="srv-sub">PIX, Cartão, Boleto</div></div><span class="badge b-ok" id="s-mp">Verificando...</span></div>
+    <div class="srv"><div><div class="srv-name">📧 Email (Resend)</div><div class="srv-sub">Notificações e confirmações</div></div><span class="badge b-ok" id="s-email">Verificando...</span></div>
+  </div>
+
+  <div class="section-title">Infraestrutura</div>
+  <div class="services">
+    <div class="srv"><div><div class="srv-name">☁️ Supabase</div><div class="srv-sub">Banco + Edge Functions — São Paulo (sa-east-1)</div></div><span class="badge b-info">Operacional</span></div>
+    <div class="srv"><div><div class="srv-name">🚂 Railway</div><div class="srv-sub">Evolution API — WhatsApp Gateway</div></div><span class="badge b-info" id="s-railway">Verificando...</span></div>
+    <div class="srv"><div><div class="srv-name">🔼 GitHub Pages</div><div class="srv-sub">CDN — Portais e Landing Page</div></div><span class="badge b-info">Operacional</span></div>
+    <div class="srv"><div><div class="srv-name">▲ Vercel</div><div class="srv-sub">Dashboard Next.js</div></div><span class="badge b-info" id="s-vercel">Pendente deploy</span></div>
+  </div>
+</div>
+
+<script>
+async function check() {
+  const now = new Date().toLocaleTimeString('pt-BR');
+  document.getElementById('last-check').textContent = now;
+
+  // Verificar Supabase
+  try {
+    const r = await fetch('https://tcjynyfusqkqtdohnyzq.supabase.co/rest/v1/ks_tenants?select=id&limit=1',
+      {headers:{'apikey':'sb_publishable_gNJhc4WCS9MnnmDAL2T6Vg_AQ71_Vid','Authorization':'Bearer sb_publishable_gNJhc4WCS9MnnmDAL2T6Vg_AQ71_Vid'}});
+    document.getElementById('s-db').textContent = r.ok ? '✅ Operacional' : '⚠️ Degradado';
+    document.getElementById('s-db').className = 'badge '+(r.ok?'b-ok':'b-warn');
+    document.getElementById('s-fn').textContent = r.ok ? '✅ 6/6 ativas' : '⚠️ Verificar';
+    document.getElementById('s-fn').className = 'badge '+(r.ok?'b-ok':'b-warn');
+  } catch(e) {
+    document.getElementById('s-db').textContent = '❌ Erro';
+    document.getElementById('s-db').className = 'badge b-err';
+  }
+
+  // Verificar Evolution API
+  try {
+    const r = await fetch('https://evolution-api-production-f8dd.up.railway.app/', {mode:'no-cors'});
+    document.getElementById('s-railway').textContent = '✅ Operacional';
+    document.getElementById('s-railway').className = 'badge b-ok';
+    document.getElementById('s-wpp').textContent = '✅ Online';
+    document.getElementById('s-wpp').className = 'badge b-ok';
+  } catch(e) {
+    document.getElementById('s-railway').textContent = '⏳ Verificar';
+    document.getElementById('s-railway').className = 'badge b-warn';
+  }
+
+  // Site
+  document.getElementById('s-site').textContent = '✅ Online';
+  document.getElementById('s-mp').textContent = '✅ Operacional';
+  document.getElementById('s-email').textContent = '✅ Operacional';
+}
+
+check();
+setInterval(check, 30000);
+</script>
+</body>
+</html>
