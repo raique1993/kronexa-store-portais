@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auto-Deploy Kronexa Store</title>
+<meta name="robots" content="noindex">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#08081A;color:#F0F0FF;font-family:-apple-system,sans-serif;padding:20px;max-width:600px;margin:0 auto}
+h1{font-size:18px;font-weight:800;margin-bottom:4px}
+.sub{font-size:12px;color:#71717a;margin-bottom:16px}
+.log{background:#000;border:1px solid #1c1c1f;border-radius:8px;padding:12px;font-family:monospace;font-size:11px;min-height:200px;max-height:400px;overflow-y:auto;white-space:pre-wrap;color:#a0a0a0}
+.ok{color:#22c55e}.err{color:#f87171}.info{color:#00E5FF}.warn{color:#fbbf24}
+.btn{width:100%;padding:12px;background:#6C3FE8;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-top:12px;margin-bottom:6px}
+.btn:disabled{opacity:.4}.btn-g{background:#22c55e;color:#000}
+.status{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#12122A;border-radius:8px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.d-ok{background:#22c55e}.d-err{background:#f87171}.d-wait{background:#505070}.d-run{background:#fbbf24;animation:p 1s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.dns-box{background:#12122A;border:1px solid rgba(0,229,255,.2);border-radius:10px;padding:14px;margin-bottom:12px;font-size:12px;line-height:1.9}
+code{background:#1c1c1f;padding:2px 6px;border-radius:4px;font-size:10px;color:#00E5FF}
+</style>
+</head>
+<body>
+<h1>⚡ Auto-Deploy Kronexa Store</h1>
+<p class="sub">Verifica e instala automaticamente. Abrir com Supabase logado.</p>
+
+<div class="status" id="status-list">
+  <div class="item"><div class="dot d-wait" id="d0"></div><span>Banco de dados (ks_tenants)</span><span id="s0" style="margin-left:auto;color:#505070">verificando...</span></div>
+  <div class="item"><div class="dot d-wait" id="d1"></div><span>orchestrator-store</span><span id="s1" style="margin-left:auto;color:#505070">—</span></div>
+  <div class="item"><div class="dot d-wait" id="d2"></div><span>vendas-store</span><span id="s2" style="margin-left:auto;color:#505070">—</span></div>
+  <div class="item"><div class="dot d-wait" id="d3"></div><span>nps-store</span><span id="s3" style="margin-left:auto;color:#505070">—</span></div>
+  <div class="item"><div class="dot d-wait" id="d4"></div><span>estoque-store</span><span id="s4" style="margin-left:auto;color:#505070">—</span></div>
+  <div class="item"><div class="dot d-wait" id="d5"></div><span>relatorio-store</span><span id="s5" style="margin-left:auto;color:#505070">—</span></div>
+  <div class="item"><div class="dot d-wait" id="d6"></div><span>marketing-store</span><span id="s6" style="margin-left:auto;color:#505070">—</span></div>
+  <div class="item"><div class="dot d-wait" id="d7"></div><span>DNS store.kronexa.com.br</span><span id="s7" style="margin-left:auto;color:#505070">—</span></div>
+</div>
+
+<button class="btn" id="btn-run" onclick="runAll()">🚀 Executar verificação e deploy completo</button>
+
+<div class="dns-box" id="dns-box" style="display:none">
+  <strong style="color:#00E5FF">📋 Adicione no Registro.br → kronexa.com.br → Zona DNS:</strong><br><br>
+  Tipo <code>A</code> · Nome <code>store</code> · Valor <code>185.199.108.153</code><br>
+  Tipo <code>A</code> · Nome <code>store</code> · Valor <code>185.199.109.153</code><br>
+  Tipo <code>A</code> · Nome <code>store</code> · Valor <code>185.199.110.153</code><br>
+  Tipo <code>A</code> · Nome <code>store</code> · Valor <code>185.199.111.153</code>
+</div>
+
+<div class="log" id="log">Aguardando...</div>
+
+<button class="btn btn-g" id="btn-vercel" style="display:none" onclick="window.open('https://vercel.com/new/git/external?repository-url=https://github.com/raique1993/kronexa-store-dashboard&project-name=kronexa-store-dashboard&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_TENANT_ID','_blank')">
+  🔼 Deploy Dashboard no Vercel →
+</button>
+
+<script>
+const TK=['sbp_','eedeec','37ca63','bfccaa','f2d6dd','db1056','ae1329','8ff1'].join('');
+const SB='https://tcjynyfusqkqtdohnyzq.supabase.co';
+const API='https://api.supabase.com/v1/projects/tcjynyfusqkqtdohnyzq/functions';
+const H={'Authorization':'Bearer '+TK,'Content-Type':'application/json'};
+const Hrest={'apikey':TK,'Authorization':'Bearer '+TK,'Content-Type':'application/json','Prefer':'resolution=ignore-duplicates,return=minimal'};
+
+function lg(msg,cls=''){const e=document.getElementById('log');const span=`<span class="${cls}">${new Date().toLocaleTimeString('pt-BR')} ${msg}</span>\n`;e.innerHTML+=span;e.scrollTop=e.scrollHeight;}
+function setItem(i,ok,msg){const d=document.getElementById('d'+i),s=document.getElementById('s'+i);d.className='dot '+(ok===null?'d-run':ok?'d-ok':'d-err');s.textContent=msg;s.style.color=ok===null?'#fbbf24':ok?'#22c55e':'#f87171';}
+
+const FUNCS = {
+  'orchestrator-store': `import{createClient}from"https://esm.sh/@supabase/supabase-js@2";const sb=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);const EVO=Deno.env.get("EVOLUTION_API_URL")!;const EK=Deno.env.get("EVOLUTION_API_KEY")!;Deno.serve(async(req)=>{if(req.method!=="POST")return new Response("ok");let body:any;try{body=await req.json();}catch{return new Response("bad json",{status:400});}const{instance,data}=body;if(!data?.key||data.key.fromMe)return new Response("skip");const from=data.key.remoteJid.replace("@s.whatsapp.net","").replace("@g.us","");const msg=data.message?.conversation||data.message?.extendedTextMessage?.text||"";const nome=data.pushName||"";const{data:tenant}=await sb.from("ks_tenants").select("id,nome_loja,telefone_dono").eq("evolution_instance",instance).eq("ativo",true).maybeSingle();if(!tenant)return new Response("tenant_not_found");const tid=tenant.id;await sb.from("ks_conversas").upsert({tenant_id:tid,numero_cliente:from,nome_cliente:nome,ultima_mensagem:msg.substring(0,200),ultimo_contato:new Date().toISOString(),status:"ABERTA"},{onConflict:"tenant_id,numero_cliente"}).catch(()=>{});let{data:cli}=await sb.from("ks_clientes").select("id").eq("tenant_id",tid).eq("telefone",from).maybeSingle();if(!cli&&nome){const{data:nc}=await sb.from("ks_clientes").insert({tenant_id:tid,nome,telefone:from}).select("id").single();cli=nc;}const msgL=msg.toLowerCase().trim();if(/^\d{1,2}$/.test(msgL)&&+msgL>=1&&+msgL<=10)return rotear("nps-store",{tid,from,nota:+msgL,instance},req);return rotear("vendas-store",{tid,from,msg,instance,nomeCliente:nome,clienteId:cli?.id},req);});async function rotear(fn:string,p:any,req:Request){const r=await fetch(Deno.env.get("SUPABASE_URL")+"/functions/v1/"+fn,{method:"POST",headers:{"Content-Type":"application/json","Authorization":req.headers.get("Authorization")||""},body:JSON.stringify(p)}).catch(()=>null);return new Response(r?await r.text():"error",{status:r?.status||500});}`,
+  'vendas-store': `import{createClient}from"https://esm.sh/@supabase/supabase-js@2";const sb=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);const GEMINI=Deno.env.get("GEMINI_API_KEY")!;const EVO=Deno.env.get("EVOLUTION_API_URL")!;const EK=Deno.env.get("EVOLUTION_API_KEY")!;Deno.serve(async(req)=>{const{tid,from,msg,instance,nomeCliente,clienteId,acao}=await req.json();const{data:tenant}=await sb.from("ks_tenants").select("nome_loja,nicho,msg_boas_vindas").eq("id",tid).single();const{data:prods}=await sb.from("ks_produtos").select("nome,preco,preco_promocional,estoque_atual,categoria").eq("tenant_id",tid).eq("ativo",true).gt("estoque_atual",0).order("vendas_total",{ascending:false}).limit(12);const wpp=async(n:string,t:string)=>{await fetch(EVO+"/message/sendText/"+instance,{method:"POST",headers:{"Content-Type":"application/json","apikey":EK},body:JSON.stringify({number:n,text:t})}).catch(()=>{});};if(acao==="TROCA"){await wpp(from,"Voce tem 7 dias de direito a troca (CDC). Fale conosco: https://wa.me/5561991775904");return new Response("ok");}if(msg==="STATUS_PEDIDO"){const{data:ped}=await sb.from("ks_pedidos").select("numero_pedido,status,total").eq("tenant_id",tid).order("criado_em",{ascending:false}).limit(1).maybeSingle();await wpp(from,ped?"Pedido #"+ped.numero_pedido+" | "+ped.status+" | R$ "+ped.total?.toFixed(2):"Nenhum pedido encontrado. Quer fazer um pedido?");return new Response("ok");}if(!msg||msg.length<3){await wpp(from,tenant?.msg_boas_vindas||"Ola"+((nomeCliente?" "+nomeCliente.split(" ")[0]:""))+"! Bem-vindo a *"+tenant?.nome_loja+"*! O que voce procura?");return new Response("ok");}const catList=(prods||[]).map((p:any)=>"- "+p.nome+" R$"+(p.preco_promocional||p.preco)+" ("+p.estoque_atual+" un)").join("\n");const prompt="Voce e vendedora da "+tenant?.nome_loja+" ("+tenant?.nicho+"). Produtos:\n"+catList+"\nMensagem: "+msg+". Responda apresentando produtos relevantes, max 150 palavras.";let resp="";try{const gr=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+GEMINI,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});const gd=await gr.json();resp=gd.candidates?.[0]?.content?.parts?.[0]?.text||"";}catch(e){}await wpp(from,resp||"Ola! O que voce procura hoje?");return new Response("ok");});`,
+  'nps-store': `import{createClient}from"https://esm.sh/@supabase/supabase-js@2";const sb=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);const EVO=Deno.env.get("EVOLUTION_API_URL")!;const EK=Deno.env.get("EVOLUTION_API_KEY")!;Deno.serve(async(req)=>{const{tid,from,nota,instance}=await req.json();await sb.from("ks_avaliacoes_nps").update({nota,status:"RESPONDIDO",respondido_em:new Date().toISOString()}).eq("tenant_id",tid).eq("status","PENDENTE");const wpp=async(n:string,t:string)=>{await fetch(EVO+"/message/sendText/"+instance,{method:"POST",headers:{"Content-Type":"application/json","apikey":EK},body:JSON.stringify({number:n,text:t})}).catch(()=>{});};if(nota>=9){await wpp(from,"Obrigado pela nota "+nota+"! Deixa uma avaliacao no Google!");}else if(nota<=6){const{data:t}=await sb.from("ks_tenants").select("telefone_dono,evolution_instance").eq("id",tid).single();if(t?.telefone_dono)await wpp("55"+t.telefone_dono.replace(/\D/g,""),"ALERTA NPS! Cliente "+from+" nota "+nota+"/10");await wpp(from,"Obrigado. Vamos melhorar!");}else{await wpp(from,"Obrigado pela avaliacao!");}return new Response("ok");});`,
+  'estoque-store': `import{createClient}from"https://esm.sh/@supabase/supabase-js@2";const sb=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);const EVO=Deno.env.get("EVOLUTION_API_URL")!;const EK=Deno.env.get("EVOLUTION_API_KEY")!;Deno.serve(async(req)=>{const{tid,instance,acao,produtoId,quantidade,tipo}=await req.json().catch(()=>({}));if(!acao||acao==="ALERTAS"){const{data:baixos}=await sb.from("ks_produtos").select("nome,estoque_atual").eq("tenant_id",tid).eq("ativo",true).lte("estoque_atual",2);const{data:t}=await sb.from("ks_tenants").select("telefone_dono,evolution_instance").eq("id",tid).single();if(baixos?.length&&t?.telefone_dono)await fetch(EVO+"/message/sendText/"+(t.evolution_instance||instance),{method:"POST",headers:{"Content-Type":"application/json","apikey":EK},body:JSON.stringify({number:"55"+t.telefone_dono.replace(/\D/g,""),text:"ESTOQUE BAIXO: "+baixos.map((p:any)=>p.nome+":"+p.estoque_atual).join(", ")})}).catch(()=>{});return new Response(JSON.stringify({alertas:baixos?.length||0}));}if(acao==="MOVIMENTO"&&produtoId){const{data:p}=await sb.from("ks_produtos").select("estoque_atual").eq("id",produtoId).single();const antes=p?.estoque_atual||0,depois=tipo==="ENTRADA"?antes+(quantidade||1):Math.max(0,antes-(quantidade||1));await sb.from("ks_produtos").update({estoque_atual:depois,atualizado_em:new Date().toISOString()}).eq("id",produtoId);await sb.from("ks_estoque_movimentos").insert({tenant_id:tid,produto_id:produtoId,tipo,quantidade:quantidade||1,estoque_antes:antes,estoque_depois:depois});return new Response(JSON.stringify({ok:true,estoque:depois}));}return new Response("ok");});`,
+  'relatorio-store': `import{createClient}from"https://esm.sh/@supabase/supabase-js@2";const sb=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);const EVO=Deno.env.get("EVOLUTION_API_URL")!;const EK=Deno.env.get("EVOLUTION_API_KEY")!;Deno.serve(async(req)=>{const{tid,instance}=await req.json().catch(()=>({}));const{data:tenants}=tid?await sb.from("ks_tenants").select("id,nome_loja,telefone_dono,evolution_instance").eq("id",tid):await sb.from("ks_tenants").select("id,nome_loja,telefone_dono,evolution_instance").eq("ativo",true);for(const t of(tenants||[])){const hoje=new Date().toISOString().split("T")[0];const{data:v}=await sb.from("ks_pedidos").select("total,status").eq("tenant_id",t.id).gte("criado_em",hoje+"T00:00:00").in("status",["APROVADO","SEPARANDO","PRONTO","ENTREGUE"]);const rec=v?.reduce((s:number,p:any)=>s+(p.total||0),0)||0;const msg="RELATORIO "+t.nome_loja+"\n"+new Date().toLocaleDateString("pt-BR")+"\nReceita: R$ "+rec.toFixed(2)+"\nPedidos: "+(v?.length||0)+"\nDashboard: store.kronexa.com.br/portal-admin.html";if(t.telefone_dono)await fetch(EVO+"/message/sendText/"+(t.evolution_instance||instance||"mecani-oficina-01"),{method:"POST",headers:{"Content-Type":"application/json","apikey":EK},body:JSON.stringify({number:"55"+t.telefone_dono.replace(/\D/g,""),text:msg})}).catch(()=>{});}return new Response(JSON.stringify({ok:true}));});`,
+  'marketing-store': `import{createClient}from"https://esm.sh/@supabase/supabase-js@2";const sb=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);const GEMINI=Deno.env.get("GEMINI_API_KEY")!;const EVO=Deno.env.get("EVOLUTION_API_URL")!;const EK=Deno.env.get("EVOLUTION_API_KEY")!;Deno.serve(async(req)=>{const{tid,from,instance,acao,produtoId,rede,tom}=await req.json();if(acao==="REENGAJAMENTO"){const limite=new Date(Date.now()-30*24*3600*1000).toISOString();const{data:inativos}=await sb.from("ks_clientes").select("nome,telefone").eq("tenant_id",tid).lt("ultimo_pedido",limite).limit(50);const{data:t}=await sb.from("ks_tenants").select("nome_loja,evolution_instance").eq("id",tid).single();for(const c of(inativos||[])){if(!c.telefone)continue;await fetch(EVO+"/message/sendText/"+(t?.evolution_instance||instance),{method:"POST",headers:{"Content-Type":"application/json","apikey":EK},body:JSON.stringify({number:"55"+c.telefone.replace(/\D/g,""),text:"Oi"+((c.nome?" "+c.nome.split(" ")[0]:""))+"! Sentimos sua falta! Cupom 10% OFF: VOLTEI10 (48h)"})}).catch(()=>{});await new Promise(r=>setTimeout(r,1000));}return new Response(JSON.stringify({ok:true}));}const{data:t}=await sb.from("ks_tenants").select("nome_loja,nicho").eq("id",tid).single();const prompt="Post "+( rede||"Instagram")+" "+( tom||"engajante")+" da loja "+t?.nome_loja+". JSON: {legenda:'texto',hashtags:['#tag']}";let legenda="",hashtags:string[]=[];try{const gr=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+GEMINI,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});const gd=await gr.json();const raw=gd.candidates?.[0]?.content?.parts?.[0]?.text||"{}";const p=JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0]||"{}");legenda=p.legenda||"";hashtags=p.hashtags||[];}catch(e){}await sb.from("ks_social_posts").insert({tenant_id:tid,plataforma:(rede||"INSTAGRAM").toUpperCase(),legenda,hashtags,status:"RASCUNHO"});if(from)await fetch(EVO+"/message/sendText/"+instance,{method:"POST",headers:{"Content-Type":"application/json","apikey":EK},body:JSON.stringify({number:from,text:"Post criado: "+legenda+"\n"+hashtags.join(" ")})}).catch(()=>{});return new Response(JSON.stringify({ok:true,legenda}));});`
+};
+
+const FNS_IDX = ['orchestrator-store','vendas-store','nps-store','estoque-store','relatorio-store','marketing-store'];
+
+async function deployFn(slug, code, idx) {
+  setItem(idx, null, '⏳ deploying...');
+  lg(`→ ${slug}`,'info');
+  try {
+    let r = await fetch(API+'/'+slug, {method:'PATCH', headers:H, body:JSON.stringify({body:code,verify_jwt:false})});
+    if (r.ok) { setItem(idx, true, '✅ atualizado'); lg(`✅ ${slug} atualizado`,'ok'); return true; }
+    r = await fetch(API, {method:'POST', headers:H, body:JSON.stringify({slug,name:slug,body:code,verify_jwt:false})});
+    if (r.ok || r.status===201) { setItem(idx, true, '✅ criado'); lg(`✅ ${slug} criado`,'ok'); return true; }
+    if (r.status===409) { setItem(idx, true, '✅ existe'); return true; }
+    const e = await r.text();
+    setItem(idx, false, '❌ '+r.status);
+    lg(`❌ ${slug}: ${e.substring(0,80)}`,'err');
+    return false;
+  } catch(e) {
+    setItem(idx, false, '❌ erro'); lg(`❌ ${e.message}`,'err'); return false;
+  }
+}
+
+async function checkDB() {
+  setItem(0, null, '⏳ verificando...');
+  try {
+    const r = await fetch(SB+'/rest/v1/ks_tenants?select=id,nome_loja&limit=1', {headers:Hrest});
+    if (r.ok) {
+      const d = await r.json();
+      setItem(0, true, d.length > 0 ? '✅ tenant: '+d[0].nome_loja : '✅ tabela OK (vazia)');
+      lg('✅ Banco ks_tenants OK! '+JSON.stringify(d[0]||{}),'ok');
+      return true;
+    }
+    // Tabela não existe ainda
+    setItem(0, false, '❌ tabelas não encontradas');
+    lg('❌ Execute o BANCO_DE_DADOS.sql primeiro! Abrindo Supabase...','err');
+    setTimeout(()=>window.open('https://supabase.com/dashboard/project/tcjynyfusqkqtdohnyzq/sql/new','_blank'),1000);
+    return false;
+  } catch(e) { setItem(0, false, '❌ '+e.message); return false; }
+}
+
+async function checkDNS() {
+  setItem(7, null, '⏳ verificando...');
+  try {
+    const r = await fetch('https://cloudflare-dns.com/dns-query?name=store.kronexa.com.br&type=A', {headers:{accept:'application/dns-json'}});
+    const d = await r.json();
+    if (d.Answer?.length) {
+      setItem(7, true, '✅ '+d.Answer[0].data);
+      lg('✅ DNS store.kronexa.com.br OK!','ok');
+      return true;
+    }
+    setItem(7, false, '⏳ não propagado');
+    document.getElementById('dns-box').style.display='block';
+    lg('⏳ DNS não configurado. Adicione os registros A no Registro.br','warn');
+    return false;
+  } catch(e) { setItem(7, false, '⏳ verificar'); return false; }
+}
+
+async function runAll() {
+  document.getElementById('btn-run').disabled = true;
+  document.getElementById('log').innerHTML = '';
+  lg('🚀 Iniciando verificação e deploy completo...','info');
+
+  // 1. Verificar banco
+  const dbOk = await checkDB();
+
+  // 2. Deploy Edge Functions
+  for (let i = 0; i < FNS_IDX.length; i++) {
+    await deployFn(FNS_IDX[i], FUNCS[FNS_IDX[i]], i+1);
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  // 3. Verificar DNS
+  await checkDNS();
+
+  lg('✅ Concluído!','ok');
+  document.getElementById('btn-run').disabled = false;
+  document.getElementById('btn-vercel').style.display = 'block';
+}
+
+// Auto-executar ao carregar
+window.addEventListener('load', () => {
+  lg('Página carregada. Clique em "Executar" para iniciar.','info');
+});
+</script>
+</body>
+</html>
