@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conectar WhatsApp — Kronexa</title>
+<meta name="robots" content="noindex">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a15;color:#f0f0ff;font-family:-apple-system,sans-serif;padding:20px;min-height:100vh}
+h1{font-size:20px;font-weight:900;margin-bottom:4px}
+.sub{font-size:13px;color:#666;margin-bottom:24px}
+.card{background:#12122a;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:16px}
+.card h2{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.tag{padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700}
+.t-p{background:rgba(108,63,232,.2);color:#a78bfa}
+.t-s{background:rgba(0,229,255,.15);color:#00e5ff}
+.qr-box{background:#fff;border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:center;min-height:250px;margin-bottom:12px;position:relative}
+.qr-img{width:220px;height:220px;object-fit:contain}
+.status{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-ok{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.5)}
+.dot-err{background:#f87171}
+.dot-wait{background:#fbbf24;animation:p .8s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.btn{width:100%;padding:12px;background:#6c3fe8;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-top:10px}
+.btn:disabled{opacity:.4}
+.btn-ok{background:#22c55e;color:#000}
+.info{font-size:11px;color:#555;margin-top:8px;line-height:1.6}
+</style>
+</head>
+<body>
+<h1>📱 Conectar WhatsApp</h1>
+<p class="sub">Escaneie o QR Code com o chip novo para ativar a IA</p>
+
+<div class="card">
+  <h2>🔧 Mecani.AI <span class="tag t-s">mecani-oficina-01</span></h2>
+  <div class="qr-box" id="qr-mecani">
+    <span style="color:#555;font-size:13px">Clique em "Gerar QR" para carregar</span>
+  </div>
+  <div class="status">
+    <div class="dot dot-wait" id="dot-mecani"></div>
+    <span id="status-mecani">Aguardando...</span>
+  </div>
+  <button class="btn" onclick="gerarQR('mecani-oficina-01','mecani')">📷 Gerar QR Code</button>
+  <p class="info">Chip novo → WhatsApp → ⋮ → Dispositivos vinculados → Vincular dispositivo → Escanear</p>
+</div>
+
+<div class="card">
+  <h2>🛍️ Kronexa Store <span class="tag t-p">kronexa-store-01</span></h2>
+  <div class="qr-box" id="qr-store">
+    <span style="color:#555;font-size:13px">Clique em "Gerar QR" para carregar</span>
+  </div>
+  <div class="status">
+    <div class="dot dot-wait" id="dot-store"></div>
+    <span id="status-store">Aguardando...</span>
+  </div>
+  <button class="btn" onclick="gerarQR('kronexa-store-01','store')">📷 Gerar QR Code</button>
+  <p class="info">Chip novo → WhatsApp → ⋮ → Dispositivos vinculados → Vincular dispositivo → Escanear</p>
+</div>
+
+<script>
+const EVO = 'https://evolution-api-production-f8dd.up.railway.app';
+const KEY = 'a6c76ff8be4630ac09151a15b1273f9a86ad10c466a68931eb24c40fea102365';
+const H = {'apikey': KEY, 'Content-Type': 'application/json'};
+
+async function gerarQR(instance, id) {
+  const box = document.getElementById('qr-'+id);
+  const dot = document.getElementById('dot-'+id);
+  const status = document.getElementById('status-'+id);
+  const btn = box.nextElementSibling.nextElementSibling;
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Carregando...';
+  dot.className = 'dot dot-wait';
+  status.textContent = 'Conectando...';
+
+  try {
+    // Verificar estado atual
+    const r1 = await fetch(`${EVO}/instance/connectionState/${instance}`, {headers: H});
+    const d1 = await r1.json();
+    const state = d1?.instance?.state || d1?.state || '';
+
+    if (state === 'open') {
+      box.innerHTML = '<div style="text-align:center"><div style="font-size:48px">✅</div><div style="font-size:14px;font-weight:700;color:#22c55e;margin-top:8px">WhatsApp Conectado!</div></div>';
+      dot.className = 'dot dot-ok';
+      status.textContent = '✅ Conectado e ativo!';
+      btn.textContent = '🔄 Reconectar';
+      btn.disabled = false;
+      btn.className = 'btn btn-ok';
+      return;
+    }
+
+    // Pegar QR Code
+    const r2 = await fetch(`${EVO}/instance/connect/${instance}`, {headers: H});
+    const d2 = await r2.json();
+
+    if (d2.base64) {
+      box.innerHTML = `<img src="${d2.base64}" class="qr-img" alt="QR Code">`;
+      dot.className = 'dot dot-wait';
+      status.textContent = '⏳ Aguardando escaneamento...';
+      btn.textContent = '🔄 Atualizar QR';
+      btn.disabled = false;
+
+      // Polling para verificar conexão
+      let attempts = 0;
+      const poll = setInterval(async () => {
+        attempts++;
+        const r3 = await fetch(`${EVO}/instance/connectionState/${instance}`, {headers: H}).catch(()=>null);
+        if (!r3) return;
+        const d3 = await r3.json();
+        const s = d3?.instance?.state || d3?.state || '';
+        if (s === 'open') {
+          clearInterval(poll);
+          box.innerHTML = '<div style="text-align:center"><div style="font-size:48px">✅</div><div style="font-size:14px;font-weight:700;color:#22c55e;margin-top:8px">WhatsApp Conectado!</div></div>';
+          dot.className = 'dot dot-ok';
+          status.textContent = '✅ Conectado!';
+          btn.className = 'btn btn-ok';
+          btn.textContent = '✅ Conectado!';
+        }
+        if (attempts > 60) clearInterval(poll); // 5 min
+      }, 5000);
+
+    } else if (d2.code) {
+      // QR como texto
+      box.innerHTML = `<div style="font-size:9px;word-break:break-all;color:#333;padding:8px">${d2.code.substring(0,100)}...<br><br><span style="color:#666">Use o Evolution API Manager para escanear</span></div>`;
+      dot.className = 'dot dot-wait';
+      status.textContent = '⏳ QR disponível no Evolution Manager';
+      btn.textContent = '🔄 Tentar novamente';
+      btn.disabled = false;
+    } else {
+      status.textContent = 'Erro: ' + JSON.stringify(d2).substring(0,60);
+      dot.className = 'dot dot-err';
+      btn.disabled = false;
+      btn.textContent = '🔄 Tentar novamente';
+    }
+  } catch(e) {
+    status.textContent = 'Erro de conexão: ' + e.message;
+    dot.className = 'dot dot-err';
+    btn.disabled = false;
+    btn.textContent = '🔄 Tentar novamente';
+  }
+}
+
+// Auto-carregar estado ao abrir
+window.addEventListener('load', async () => {
+  for (const [inst, id] of [['mecani-oficina-01','mecani'],['kronexa-store-01','store']]) {
+    try {
+      const r = await fetch(`${EVO}/instance/connectionState/${inst}`, {headers: H});
+      const d = await r.json();
+      const state = d?.instance?.state || d?.state || '';
+      const dot = document.getElementById('dot-'+id);
+      const status = document.getElementById('status-'+id);
+      if (state === 'open') {
+        dot.className = 'dot dot-ok';
+        status.textContent = '✅ Já conectado!';
+        document.getElementById('qr-'+id).innerHTML = '<div style="text-align:center"><div style="font-size:48px">✅</div><div style="font-size:14px;font-weight:700;color:#22c55e;margin-top:8px">WhatsApp Conectado!</div></div>';
+      } else {
+        dot.className = 'dot dot-err';
+        status.textContent = `Estado: ${state || 'desconectado'} — clique em Gerar QR`;
+      }
+    } catch(e) {}
+  }
+});
+</script>
+</body>
+</html>
